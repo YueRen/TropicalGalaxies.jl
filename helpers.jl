@@ -39,5 +39,21 @@ function triangle_chain(k::Int)
 end
 
 function triangle_wheel(k)
-    # TODO: implement this function
+    # Build the edge dictionary with  labels
+    edge_dict = Dict((1,2)=>1, (1,3)=>2, (2,3)=>3)
+    edge_label = 4  # Start labeling new edges from 4
+    
+    if k > 3
+        for i in 4:k
+            # Add edge from vertex 1 to new vertex i
+            edge_dict[(1,i)] = edge_label
+            edge_label += 1
+            
+            # Add edge from new vertex i to previous vertex i-1
+            edge_dict[(i,i-1)] = edge_label
+            edge_label += 1
+        end
+    end
+    
+    return graph_from_labeled_edges(Undirected, edge_dict)
 end
