@@ -1,18 +1,49 @@
 using Revise
 using Oscar
 
+struct Undirected_MultiGraph
+    vertices::Vector{Int}
+    edges::Vector{Tuple{Int, Int}}
+end
+
+
+function edge_labels(graph::Undirected_MultiGraph)
+    #Generates labels for the edges of an undirected multigraph
+    labels = Dict{Tuple{Int, Int, Int}, Int}()  # (u, v, k) => label
+    counts = Dict{Tuple{Int, Int}, Int}()
+
+    for (i, (u, v)) in enumerate(graph.edges)
+        edge = (u, v)
+        counts[edge] = get(counts, edge, 0) + 1
+        labels[(u, v, counts[edge])] = i
+    end
+
+    return labels
+end
+
+
+"""
+Example usage:
+triangle_graph = Undirected_MultiGraph(
+    [1, 2, 3],
+    [(2, 1), (3, 1), (3, 2), (3,2)]
+)
+
+e = edge_labels(triangle_graph)
+
+returns
+    (3, 1, 1) => 2
+    (3, 2, 2) => 4
+    (2, 1, 1) => 1
+    (3, 2, 1) => 3
+""" 
+
+
 function excise(G,e,n)
     # TODO: create function
 end
 
-"""
-    triangle_chain(k)
 
-Creates a graph of `k` chained triangles.
-Each triangle shares an edge with the next one.
-
-Returns a SimpleGraph.
-"""
 function triangle_chain(k::Int)
     # Total number of vertices: 2 shared + 1 new per triangle
     num_vertices = k + 2
@@ -37,6 +68,7 @@ function triangle_chain(k::Int)
 
     return g
 end
+
 
 function triangle_wheel(k)
     # Build the edge dictionary with  labels
