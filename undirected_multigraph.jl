@@ -1,10 +1,6 @@
 struct Undirected_MultiGraph
     n_vertices::Int
     edges::Vector{Tuple{Int, Int}}
-    function undirected_multigraph(n_vertices::Int, edges::Vector{Tuple{Int, Int}})
-        @assert all(e->(e==sort(e)), edges) "Edges must be sorted, e.g., (1,2) instead of (2,1)"
-        new(n_vertices, edges)
-    end
 
 end
 
@@ -16,7 +12,10 @@ function edges(g::Undirected_MultiGraph)
     return g.edges
 end
 
-
+function undirected_multigraph(n_vertices::Int, edges::Vector{Tuple{Int, Int}})
+    @assert all(e->(collect(e)==sort(collect(e))), edges) "Edges must be sorted, e.g., (1,2) instead of (2,1)"
+    Undirected_MultiGraph(n_vertices, edges)
+end
 
 """
 Example usage:
@@ -64,7 +63,7 @@ function triangle_wheel(n)
         push!(edges, (i-1, i))    
     end
     
-    return Undirected_MultiGraph(n,edges)
+    return undirected_multigraph(n,edges)
 end
 
 
@@ -102,3 +101,21 @@ function visualize_graph(multigraph)
 end
 
 
+function excise(graph::Undirected_MultiGraph, excisedVertices::Vector{Int})
+    n = n_vertices(graph)
+    newEdges = Vector{Tuple{Int, Int}}()
+    for e in edges(graph)
+        if e[1] ∈ excisedVertices && e[2] ∈ excisedVertices
+            push!(newEdges, e)
+        elseif e[1] ∉ excisedVertices && e[2] ∉ excisedVertices
+            push!(newEdges,e)
+        elseif e[1] ∈ excisedVertices
+            push!(newEdges, (e[2], n+1))
+        else 
+            push!(newEdges, (e[1], n+1))
+        end
+    
+    end
+
+    return Undirected_MultiGraph(n + 1, newEdges)
+end 

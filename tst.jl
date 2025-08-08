@@ -1,10 +1,16 @@
 include("helpers.jl") 
 
-triangle_graph = Undirected_MultiGraph(
-    3,
-    [(2, 1), (2,1), (3, 1), (3, 2), (3,2)]
-)
 
-visualize_graph(triangle_graph)
+g = triangle_wheel(6)
+
+
+visualize_graph(g)
+
+g1 = excise(g,[1,2])
+visualize_graph(g1)
+
+g2 = excise(g,[1,2,3])
+visualize_graph(g2)
+
 
 
