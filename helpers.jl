@@ -1,45 +1,10 @@
 using Revise
-using Oscar
+#using Oscar
 using Plots
 using Graphs
 using GraphRecipes
+include("undirected_multigraph.jl")
 
-struct Undirected_MultiGraph
-    vertices::Vector{Int}
-    edges::Vector{Tuple{Int, Int}}
-end
-
-
-function edge_labels(graph)
-    #Generates labels for the edges of an undirected multigraph
-    labels = Dict{Tuple{Int, Int, Int}, Int}()  # (u, v, k) => label
-    counts = Dict{Tuple{Int, Int}, Int}()
-
-    for (i, (u, v)) in enumerate(graph.edges)
-        edge = (u, v)
-        counts[edge] = get(counts, edge, 0) + 1
-        labels[(u, v, counts[edge])] = i
-    end
-
-    return labels
-end
-
-
-"""
-Example usage:
-triangle_graph = Undirected_MultiGraph(
-    [1, 2, 3],
-    [(2, 1), (3, 1), (3, 2), (3,2)]
-)
-
-e = edge_labels(triangle_graph)
-
-returns
-    (3, 1, 1) => 2
-    (3, 2, 2) => 4
-    (2, 1, 1) => 1
-    (3, 2, 1) => 3
-"""
 
 
 
@@ -48,87 +13,4 @@ function excise(G,e,n)
 end
 
 
-function triangle_chain(k::Int)
-    # Total number of vertices: 2 shared + 1 new per triangle
-    num_vertices = k + 2
-    g = graph(Undirected, num_vertices)
 
-    # First triangle: vertices 1-2-3
-    add_edge!(g, 1, 2)
-    add_edge!(g, 2, 3)
-    add_edge!(g, 3, 1)
-
-    # Subsequent triangles
-    for i in 1:k-1
-        # Triangle i shares edge (i+1, i+2), add new node (i+3)
-        u = i + 1
-        v = i + 2
-        w = i + 3
-
-        # Safe to add edge since we preallocated num_vertices
-        add_edge!(g, u, w)
-        add_edge!(g, v, w)
-    end
-
-    return g
-end
-
-
-function triangle_wheel(k)
-    # Build the edge dictionary with  labels
-    edge_dict = Dict((1,2)=>1, (1,3)=>2, (2,3)=>3)
-    edge_label = 4  # Start labeling new edges from 4
-    
-    if k > 3
-        for i in 4:k
-            # Add edge from vertex 1 to new vertex i
-            edge_dict[(1,i)] = edge_label
-            edge_label += 1
-            
-            # Add edge from new vertex i to previous vertex i-1
-            edge_dict[(i,i-1)] = edge_label
-            edge_label += 1
-        end
-    end
-    
-    return graph_from_labeled_edges(Undirected, edge_dict)
-end
-
-
-function visualize_graph(multigraph)
-    # Visualize the underlying simple graph, adds edge labels to graph
-
-    # Removes duplicate edges 
-    simple_edges = Set(Tuple(e) for e in multigraph.edges)
-
-    g = SimpleGraph(length(multigraph.vertices))
-
-    for (u,v) in simple_edges
-        Graphs.add_edge!(g, u, v)
-    end
-
-    # Edge labels 
-    e_labels = edge_labels(multigraph)
-    label_dict = Dict{Tuple{Int,Int}, String}()
-    
-    for (u, v) in simple_edges
-        matches = [val for ((a, b, _), val) in e_labels if (a, b) == (u, v) || (a, b) == (v, u)]
-        label_dict[(u, v)] = join(matches, ", ")
-        label_dict[(v, u)] = label_dict[(u, v)] 
-    end
-
-    graphplot(
-        g,
-        names = triangle_graph.vertices,
-        edgelabel = label_dict,
-        nodeshape = :circle,
-        curves = false)
-    end
-
-
-triangle_graph = Undirected_MultiGraph(
-    [1, 2, 3],
-    [(2, 1), (3, 1), (3, 2), (3,2)]
-)
-
-visualize_graph(triangle_graph)
