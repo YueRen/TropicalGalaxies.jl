@@ -1,5 +1,8 @@
 using Revise
 using Oscar
+using Plots
+using Graphs
+using GraphRecipes
 
 struct Undirected_MultiGraph
     vertices::Vector{Int}
@@ -7,7 +10,7 @@ struct Undirected_MultiGraph
 end
 
 
-function edge_labels(graph::Undirected_MultiGraph)
+function edge_labels(graph)
     #Generates labels for the edges of an undirected multigraph
     labels = Dict{Tuple{Int, Int, Int}, Int}()  # (u, v, k) => label
     counts = Dict{Tuple{Int, Int}, Int}()
@@ -36,7 +39,8 @@ returns
     (3, 2, 2) => 4
     (2, 1, 1) => 1
     (3, 2, 1) => 3
-""" 
+"""
+
 
 
 function excise(G,e,n)
@@ -89,3 +93,42 @@ function triangle_wheel(k)
     
     return graph_from_labeled_edges(Undirected, edge_dict)
 end
+
+
+function visualize_graph(multigraph)
+    # Visualize the underlying simple graph, adds edge labels to graph
+
+    # Removes duplicate edges 
+    simple_edges = Set(Tuple(e) for e in multigraph.edges)
+
+    g = SimpleGraph(length(multigraph.vertices))
+
+    for (u,v) in simple_edges
+        Graphs.add_edge!(g, u, v)
+    end
+
+    # Edge labels 
+    e_labels = edge_labels(multigraph)
+    label_dict = Dict{Tuple{Int,Int}, String}()
+    
+    for (u, v) in simple_edges
+        matches = [val for ((a, b, _), val) in e_labels if (a, b) == (u, v) || (a, b) == (v, u)]
+        label_dict[(u, v)] = join(matches, ", ")
+        label_dict[(v, u)] = label_dict[(u, v)] 
+    end
+
+    graphplot(
+        g,
+        names = triangle_graph.vertices,
+        edgelabel = label_dict,
+        nodeshape = :circle,
+        curves = false)
+    end
+
+
+triangle_graph = Undirected_MultiGraph(
+    [1, 2, 3],
+    [(2, 1), (3, 1), (3, 2), (3,2)]
+)
+
+visualize_graph(triangle_graph)
