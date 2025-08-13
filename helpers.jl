@@ -1,5 +1,5 @@
 using Revise
-#using Oscar
+using Oscar
 using Plots
 using Graphs
 using GraphRecipes
