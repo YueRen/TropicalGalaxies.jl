@@ -16,3 +16,7 @@ visualize_graph(g2)
 MG = vertex_edge_matrix(g)
 
 TropG = tropical_linear_space(MG)
+
+TropGNeg = -TropG
+
+# TropG * (-TropG)
