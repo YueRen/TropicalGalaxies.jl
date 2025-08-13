@@ -13,4 +13,6 @@ g2 = excise(g,[1,2,3])
 visualize_graph(g2)
 
 
+MG = vertex_edge_matrix(g)
 
+TropG = tropical_linear_space(MG)

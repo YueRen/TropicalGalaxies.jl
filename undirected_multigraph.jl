@@ -119,3 +119,14 @@ function excise(graph::Undirected_MultiGraph, excisedVertices::Vector{Int})
 
     return Undirected_MultiGraph(n + 1, newEdges)
 end 
+
+function vertex_edge_matrix(multigraph::Undirected_MultiGraph)
+    m = length(edges(multigraph))
+    n = n_vertices(multigraph)
+    graph_matrix = zero_matrix(QQ, n, m)
+    for (j,edge) in enumerate(edges(multigraph))
+        graph_matrix[edge[1],j] = -1
+        graph_matrix[edge[2],j] = 1
+    end
+    return graph_matrix
+end
