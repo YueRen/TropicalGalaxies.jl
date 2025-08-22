@@ -13,12 +13,26 @@ import Base: *
 include("oscar_wishlist.jl")
 include("undirected_multigraph.jl")
 
-function bergman_transverse(M,F1,F2)
-    # todo: create the matrix with columns F1 and F2 and check whether it is of full rank
+
+function indicator_vector(m::Int, Fj::Vector{Int})
+    v = zeros(Int, m)
+    for j in Fj
+        v[j] = 1
+    end
+    return v
 end
 
-function is_tree(GG::Undirected_MultiGraph)
-    # todo: implement dfs test
+function is_bergman_transverse(F1::Vector{Vector{Int}},F2::Vector{Vector{Int}})
+    indicatorVectors = Vector{Int}[]
+    m = length(last(F1))
+    for f1 in F1
+        push!(indicatorVectors, indicator_vector(m, f1))
+    end
+    for f2 in F2
+        push!(indicatorVectors, indicator_vector(m, f2))
+    end
+    indicatorVectorsMatrix = hcat(indicatorVectors...)
+    return rank(indicatorVectorsMatrix) == nrows(indicatorVectorsMatrix)
 end
 
 function coupling(F1::Vector{Vector{Int64}},F2::Vector{Vector{Int64}})
