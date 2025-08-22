@@ -134,3 +134,44 @@ function vertex_edge_matrix(multigraph::Undirected_MultiGraph)
     end
     return graph_matrix
 end
+
+
+function is_tree(GG::Undirected_MultiGraph)
+    if n_edges(GG) != n_vertices(GG) - 1
+        return false
+    end
+    e = edges(GG)
+    
+    # Check every vertex is contained in some edge
+    
+    for v in 1:n_vertices(GG)
+        findfirst(u -> (v in u), e) === nothing && return false
+    end
+    return true
+
+
+
+
+    # Adjacency list 
+    #adj = Dict{Int, Vector{Int}}()
+    #for (u, v) in e
+    #    push!(get!(adj, u, Int[]), v)
+    #    push!(get!(adj, v, Int[]), u)
+    #end
+
+    # Recursive algorithm
+    #function dfs(v, parent, visited)
+    #    push!(visited, v)
+    #    for neighbor in adj[v]
+    #        if neighbor ∉ visited
+    #            if !dfs(neighbor, v, visited)
+    #                return false
+    #            end
+    #        elseif neighbor != parent
+    #            return false
+    #        end
+    #    end
+    #    return true
+    #end
+    #visited = Set{Int}()
+end
