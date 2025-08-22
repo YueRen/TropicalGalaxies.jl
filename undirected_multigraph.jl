@@ -8,6 +8,10 @@ function n_vertices(g::Undirected_MultiGraph)
     return g.n_vertices
 end
 
+function n_edges(g::Undirected_MultiGraph)
+    return length(g.edges)
+end
+
 function edges(g::Undirected_MultiGraph)
     return g.edges
 end
