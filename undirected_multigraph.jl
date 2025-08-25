@@ -21,21 +21,6 @@ function undirected_multigraph(n_vertices::Int, edges::Vector{Tuple{Int, Int}})
     Undirected_MultiGraph(n_vertices, edges)
 end
 
-"""
-Example usage:
-triangle_graph = Undirected_MultiGraph(
-    [1, 2, 3],
-    [(2, 1), (3, 1), (3, 2), (3,2)]
-)
-
-e = edge_labels(triangle_graph)
-
-returns
-    (3, 1, 1) => 2
-    (3, 2, 2) => 4
-    (2, 1, 1) => 1
-    (3, 2, 1) => 3
-"""
 
 function triangle_chain(n::Int)
  
@@ -148,30 +133,86 @@ function is_tree(GG::Undirected_MultiGraph)
         findfirst(u -> (v in u), e) === nothing && return false
     end
     return true
-
-
-
-
-    # Adjacency list 
-    #adj = Dict{Int, Vector{Int}}()
-    #for (u, v) in e
-    #    push!(get!(adj, u, Int[]), v)
-    #    push!(get!(adj, v, Int[]), u)
-    #end
-
-    # Recursive algorithm
-    #function dfs(v, parent, visited)
-    #    push!(visited, v)
-    #    for neighbor in adj[v]
-    #        if neighbor ∉ visited
-    #            if !dfs(neighbor, v, visited)
-    #                return false
-    #            end
-    #        elseif neighbor != parent
-    #            return false
-    #        end
-    #    end
-    #    return true
-    #end
-    #visited = Set{Int}()
 end
+
+function is_forest(g::Undirected_MultiGraph)
+    """
+    is_forest checks if an undirected multigraph is a tree, forest or neither
+    tree -> connected and acyclic
+    forest -> acyclic but not connected
+    neither -> has cycles
+    """
+
+    n = n_vertices(g)
+    e = edges(g)
+
+    # Adjacency list
+    adj = Dict{Int, Vector{Int}}()
+    for (u, v) in e
+        push!(get!(adj, u, Int[]), v)
+        push!(get!(adj, v, Int[]), u)
+    end
+    
+    has_cycle = Ref(false)
+    components = 0
+    visited = fill(false, n)
+    
+    function dfs(current, visited, parent)
+        visited[current] = true
+        for i in adj[current]
+            if !visited[i]
+                dfs(i, visited, current)
+            elseif i != parent
+                has_cycle[] = true
+                return false # cycle detected
+            end
+        end
+    end
+
+    for v in 1:n
+        if !visited[v]
+            components += 1
+            dfs(v, visited, -1)
+
+        end
+    end
+
+    if has_cycle[]
+        return "neither"
+       
+    elseif components == 1
+        return "tree"
+    else 
+        return "forest"
+    end
+        
+end
+
+
+function laman_graphs(n)
+    """
+    Generates all Laman Graphs upto 5 vertices
+    """
+    if n == 2
+        return Undirected_MultiGraph(2, [(2, 1)])
+
+    elseif n == 3
+        return Undirected_MultiGraph(3, 
+                [(2, 1), (3, 1), (3, 2)])
+
+    elseif n == 4
+        return Undirected_MultiGraph(4, 
+                [(2, 1), (3, 1), (4, 1), (4, 2), (4, 3)])
+    
+    elseif n == 5
+        return [Undirected_MultiGraph(5, 
+                [(2, 1), (3, 1), (4, 1), (5, 2), (5, 3), (5, 4), (4, 3)]),
+
+                Undirected_MultiGraph(5, 
+                [(2, 1), (3, 1), (4, 1), (4, 2), (5, 2), (4, 3), (5, 4)]),
+
+                Undirected_MultiGraph(5, 
+                [(2, 1), (5, 1), (3, 1), (4, 1), (5, 2), (5, 3), (5, 4)])]
+    end
+end
+
