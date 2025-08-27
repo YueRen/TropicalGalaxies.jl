@@ -1,7 +1,6 @@
 struct Undirected_MultiGraph
     n_vertices::Int
     edges::Vector{Tuple{Int, Int}}
-
 end
 
 function n_vertices(g::Undirected_MultiGraph)
@@ -20,6 +19,16 @@ function undirected_multigraph(n_vertices::Int, edges::Vector{Tuple{Int, Int}})
     @assert all(e->(collect(e)==sort(collect(e))), edges) "Edges must be sorted, e.g., (1,2) instead of (2,1)"
     Undirected_MultiGraph(n_vertices, edges)
 end
+
+# define == for Undirected_MultiGraph:
+# more complicated because we need to be agnostic towards vertex relabelings
+function Base.:(==)(g1::Undirected_MultiGraph, g2::Undirected_MultiGraph)
+
+    # Step 1: compare underlying graphs
+
+    return n_vertices(g1) == n_vertices(g2) && edges(g1) == edges(g2)
+end
+
 
 
 function triangle_chain(n::Int)
@@ -91,6 +100,15 @@ end
 
 
 function excise(graph::Undirected_MultiGraph, excisedVertices::Vector{Int})
+
+    @assert length(excisedVertices) == 2 "Currently, only multi-edge excisions supported"
+
+    # quick and dirty test to check whether multi-edge is isolated
+    V = flatten_tuple_vector(unique(edges(graph)))
+    if count(isequal(excisedVertices[1]), V) == 1 && count(isequal(excisedVertices[2]), V) == 1
+        return graph
+    end
+
     n = n_vertices(graph)
     newEdges = Vector{Tuple{Int, Int}}()
     for e in edges(graph)
@@ -216,3 +234,97 @@ function laman_graphs(n)
     end
 end
 
+
+function rank(G::Undirected_MultiGraph)
+    MG = vertex_edge_matrix(G)
+    return rank(MG)
+end
+
+
+function flatten_tuple_vector(v::Vector{Tuple{Int64, Int64}})::Vector{Int64}
+    result = Vector{Int64}()
+    sizehint!(result, 2 * length(v))  # Pre-allocate space for efficiency
+
+    for tup in v
+        push!(result, tup[1])
+        push!(result, tup[2])
+    end
+
+    return result
+end
+
+function is_fully_excised(G::Undirected_MultiGraph)
+    E = flatten_tuple_vector(unique(edges(G)))
+    return length(E)==length(unique(E))
+end
+
+function all_single_excisions(G::Undirected_MultiGraph)
+    if is_fully_excised(G)
+        return Undirected_MultiGraph[]
+    end
+    Gexcisions = Undirected_MultiGraph[]
+    for e in unique(edges(G))
+        Gexcision = excise(G, [e[1], e[2]])
+        if Gexcision != G && !(Gexcision in Gexcisions)
+            push!(Gexcisions, Gexcision)
+        end
+    end
+    return Gexcisions
+end
+
+function all_excisions(G::Undirected_MultiGraph)
+    allExcisions = Vector{Undirected_MultiGraph}[]
+    workingList = [G]
+    i = 0
+    while !isempty(workingList)
+        i += 1
+        println("Excision round $i, working list size: $(length(workingList))")
+        push!(allExcisions, workingList)
+        newExcisions = Undirected_MultiGraph[]
+        for HH in workingList
+            for HHnew in all_single_excisions(HH)
+                if !(HHnew in newExcisions)
+                    push!(newExcisions, HHnew)
+                end
+            end
+        end
+        workingList = newExcisions
+    end
+    return allExcisions
+end
+
+
+function has_isolated_triangle(G::Undirected_MultiGraph)
+
+    # find all vertices that are in the triangle
+    E = edges(G)
+    Esimple = unique(E)
+    nonIsolatedVertices = Int[]
+    for v in 1:n_vertices(G)
+        if count(e-> (v in e), Esimple) > 1
+            push!(nonIsolatedVertices, v)
+        end
+    end
+    if length(nonIsolatedVertices) != 3
+        return false, Vector{Int}[]
+    end
+
+    # remove all edges from Esimple that are not in the triangle
+    Etriangle = []
+    for e in Esimple
+        if all(v -> (v in nonIsolatedVertices), e)
+            push!(Etriangle, e)
+        end
+    end
+    @assert length(Etriangle) == 3
+
+    triangleLabels = Vector{Int}[ Int[] for _ in 1:3 ]
+    for (i,e) in enumerate(E)
+        if all(v -> (v in nonIsolatedVertices), e)
+            j = findfirst(isequal(e), Etriangle)
+            push!(triangleLabels[j], i)
+        end
+    end
+
+    return true, sort(triangleLabels)
+end

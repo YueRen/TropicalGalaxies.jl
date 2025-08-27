@@ -8,6 +8,7 @@ using GraphRecipes
 # Functions we extend
 import Base: -
 import Base: *
+import Oscar: rank
 
 # Source files
 include("oscar_wishlist.jl")

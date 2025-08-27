@@ -9,8 +9,8 @@ function Base.:(-)(TropV::Oscar.TropicalVarietySupertype)
     lineality = lineality_space(TropV)
     verticesAndRaysMatrix = matrix(QQ,Vector.(verticesAndRays))
     polyhedralComplex = polyhedral_complex(maximalPolyhedra, -verticesAndRaysMatrix, rayIndices, lineality)
-    mults = multiplicities(TropG)
-    return tropical_variety(polyhedralComplex, mults, convention(TropG))
+    mults = multiplicities(TropV)
+    return tropical_variety(polyhedralComplex, mults, convention(TropV))
 end
 
 function Base.:(*)(TropV1::Oscar.TropicalVarietySupertype, TropV2::Oscar.TropicalVarietySupertype)
