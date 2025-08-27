@@ -1,4 +1,8 @@
-include("helpers.jl") 
+include("helpers.jl")
+
+G = laman_graph(6, 13)
+visualize_graph(G)
+
 
 
 g = triangle_wheel(6)

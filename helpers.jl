@@ -12,7 +12,7 @@ import Base: *
 # Source files
 include("oscar_wishlist.jl")
 include("undirected_multigraph.jl")
-
+include("laman_ds.jl")
 
 function indicator_vector(m::Int, Fj::Vector{Int})
     v = zeros(Int, m)
