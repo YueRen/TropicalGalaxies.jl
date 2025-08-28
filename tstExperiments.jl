@@ -1,15 +1,17 @@
 include("helpers.jl")
 
 # TODO: investigate duplicates in excisions:
-G = triangle_chain(4)
+G = triangle_chain(6)
 @time Gexcisions = all_excisions(G);
-HHH3 = Gexcisions[3]
-HHH3[9] in HHH3[1:8]
+HHH5 = Gexcisions[5]
+HHH4 = Gexcisions[4]
 
 for i in 2:length(HHH3)
     println(HHH3[i] in HHH3[1:i-1])
 end
 
+visualize_graph(HHH5[1])
+visualize_graph(HHH4[10])
 visualize_graph(HHH3[7])
 visualize_graph(HHH3[8])
 HHH3[7]==HHH3[8]
@@ -17,6 +19,22 @@ edge_adjacency_matrix(HHH3[1]) == edge_adjacency_matrix(HHH3[8])
 
 G = laman_graph(6,1)
 Gexcisions = all_excisions(G);
+
+triangle_sort(HHH4)
+visualize_graph(HHH2[3])
+
+for i in 1:length(HHH4)
+    HHH4i=HHH4[i]
+    println(has_isolated_triangle(HHH4i))
+end
+
+has_isolated_triangle(HHH4[2])
+
+tropical_linear_space(vertex_edge_matrix(HHH3[1])) * (-tropical_linear_space(vertex_edge_matrix(HHH2[3])))
+
+tropical_intersection_product(HHH5[10], HHH4)
+
+
 
 
 HHH = Gexcisions[length(Gexcisions)-1]
