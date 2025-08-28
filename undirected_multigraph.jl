@@ -15,6 +15,28 @@ function edges(g::Undirected_MultiGraph)
     return g.edges
 end
 
+function edge_adjacency_matrix(g::Undirected_MultiGraph)
+    edge_list = edges(g)
+    m = length(edge_list)
+    edge_adj_matrix = zeros(Int, m, m)
+    
+    for i in 1:m
+        for j in 1:m
+            if i != j
+                edge_i = edge_list[i]
+                edge_j = edge_list[j]
+                # Two edges are adjacent if they share a common vertex
+                if edge_i[1] == edge_j[1] || edge_i[1] == edge_j[2] || 
+                   edge_i[2] == edge_j[1] || edge_i[2] == edge_j[2]
+                    edge_adj_matrix[i, j] = 1
+                end
+            end
+        end
+    end
+    
+    return edge_adj_matrix
+end
+
 function undirected_multigraph(n_vertices::Int, edges::Vector{Tuple{Int, Int}})
     @assert all(e->(collect(e)==sort(collect(e))), edges) "Edges must be sorted, e.g., (1,2) instead of (2,1)"
     Undirected_MultiGraph(n_vertices, edges)
@@ -23,10 +45,7 @@ end
 # define == for Undirected_MultiGraph:
 # more complicated because we need to be agnostic towards vertex relabelings
 function Base.:(==)(g1::Undirected_MultiGraph, g2::Undirected_MultiGraph)
-
-    # Step 1: compare underlying graphs
-
-    return n_vertices(g1) == n_vertices(g2) && edges(g1) == edges(g2)
+    return n_vertices(g1) == n_vertices(g2) && edge_adjacency_matrix(g1) == edge_adjacency_matrix(g2)
 end
 
 
