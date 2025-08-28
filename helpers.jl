@@ -4,6 +4,7 @@ using Oscar
 using Plots
 using Graphs
 using GraphRecipes
+using OrderedCollections
 
 # Functions we extend
 import Base: -

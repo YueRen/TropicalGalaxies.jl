@@ -1,3 +1,5 @@
+using OrderedCollections
+
 struct Undirected_MultiGraph
     n_vertices::Int
     edges::Vector{Tuple{Int, Int}}
@@ -331,12 +333,21 @@ function triangle_sort(G::Vector{Undirected_MultiGraph})
 
     # Sort triangles by their numerical values
     sorted_triangles = sort(collect(triangles), by = x -> x[2])
-    # Return just the graphs in sorted order
-    return sorted_triangles
+    # Return as OrderedDict to maintain sort order
+    return OrderedDict(sorted_triangles)
 end
 
-function triangle_group(triangles::Vector{Pair{Undirected_MultiGraph, Vector{Vector{Int64}}}})
-   
+function triangle_group(G::OrderedDict{Undirected_MultiGraph,Vector{Vector{Int}}})
+    triangleGroups = Dict{Vector{Vector{Int}}, Vector{Undirected_MultiGraph}}()
+    for (graph, triangle_labels) in G
+        # Use the triangle labels directly as the key instead of converting to string
+        if haskey(triangleGroups, triangle_labels)
+            push!(triangleGroups[triangle_labels], graph)
+        else
+            triangleGroups[triangle_labels] = [graph]
+        end
+    end
+    return triangleGroups
 end
 
 function tropical_intersection_product(G1::Undirected_MultiGraph, G2::Vector{Undirected_MultiGraph})
