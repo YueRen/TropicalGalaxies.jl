@@ -158,19 +158,19 @@ function vertex_edge_matrix(multigraph::Undirected_MultiGraph)
 end
 
 
-function is_tree(GG::Undirected_MultiGraph)
-    if n_edges(GG) != n_vertices(GG) - 1
-        return false
-    end
-    e = edges(GG)
+# function is_tree(GG::Undirected_MultiGraph)
+#     if n_edges(GG) != n_vertices(GG) - 1
+#         return false
+#     end
+#     e = edges(GG)
     
-    # Check every vertex is contained in some edge
+#     # Check every vertex is contained in some edge
     
-    for v in 1:n_vertices(GG)
-        findfirst(u -> (v in u), e) === nothing && return false
-    end
-    return true
-end
+#     for v in 1:n_vertices(GG)
+#         findfirst(u -> (v in u), e) === nothing && return false
+#     end
+#     return true
+# end
 
 function is_forest(g::Undirected_MultiGraph)
     """
@@ -223,34 +223,6 @@ function is_forest(g::Undirected_MultiGraph)
         return "forest"
     end
         
-end
-
-
-function laman_graphs(n)
-    """
-    Generates all Laman Graphs upto 5 vertices
-    """
-    if n == 2
-        return Undirected_MultiGraph(2, [(2, 1)])
-
-    elseif n == 3
-        return Undirected_MultiGraph(3, 
-                [(2, 1), (3, 1), (3, 2)])
-
-    elseif n == 4
-        return Undirected_MultiGraph(4, 
-                [(2, 1), (3, 1), (4, 1), (4, 2), (4, 3)])
-    
-    elseif n == 5
-        return [Undirected_MultiGraph(5, 
-                [(2, 1), (3, 1), (4, 1), (5, 2), (5, 3), (5, 4), (4, 3)]),
-
-                Undirected_MultiGraph(5, 
-                [(2, 1), (3, 1), (4, 1), (4, 2), (5, 2), (4, 3), (5, 4)]),
-
-                Undirected_MultiGraph(5, 
-                [(2, 1), (5, 1), (3, 1), (4, 1), (5, 2), (5, 3), (5, 4)])]
-    end
 end
 
 
@@ -346,4 +318,36 @@ function has_isolated_triangle(G::Undirected_MultiGraph)
     end
 
     return true, sort(triangleLabels)
+end
+
+
+function triangle_sort(G::Vector{Undirected_MultiGraph})
+    triangles = Dict{Undirected_MultiGraph,Vector{Vector{Int}}}()
+    for g in G
+        key = g 
+        value = has_isolated_triangle(g)[2]
+        triangles[key] = value
+    end
+
+    # Sort triangles by their numerical values
+    sorted_triangles = sort(collect(triangles), by = x -> x[2])
+    # Return just the graphs in sorted order
+    return sorted_triangles
+end
+
+function triangle_group(triangles::Vector{Pair{Undirected_MultiGraph, Vector{Vector{Int64}}}})
+   
+end
+
+function tropical_intersection_product(G1::Undirected_MultiGraph, G2::Vector{Undirected_MultiGraph})
+   MF = vertex_edge_matrix(G1)
+   TropF = tropical_linear_space(MF)
+   product = Vector{}()
+   for i in 1:length(G2)
+       MHHI = vertex_edge_matrix(G2[i])
+       TropHHI =  tropical_linear_space(MHHI)
+         push!(product, TropF * (-TropHHI))
+   end
+
+   return product
 end
