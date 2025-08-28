@@ -10,6 +10,10 @@ for i in 2:length(HHH3)
     println(HHH3[i] in HHH3[1:i-1])
 end
 
+visualize_graph(HHH3[7])
+visualize_graph(HHH3[8])
+HHH3[7]==HHH3[8]
+edge_adjacency_matrix(HHH3[1]) == edge_adjacency_matrix(HHH3[8])
 
 G = laman_graph(6,1)
 Gexcisions = all_excisions(G);
