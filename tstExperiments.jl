@@ -12,6 +12,10 @@ end
 
 visualize_graph(HHH5[1])
 visualize_graph(HHH4[10])
+visualize_graph(HHH3[7])
+visualize_graph(HHH3[8])
+HHH3[7]==HHH3[8]
+edge_adjacency_matrix(HHH3[1]) == edge_adjacency_matrix(HHH3[8])
 
 G = laman_graph(6,1)
 Gexcisions = all_excisions(G);
