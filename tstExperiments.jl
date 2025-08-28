@@ -5,7 +5,7 @@ G = triangle_chain(6)
 @time Gexcisions = all_excisions(G);
 HHH5 = Gexcisions[5]
 HHH4 = Gexcisions[4]
-
+HHH3 = Gexcisions[3]
 for i in 2:length(HHH3)
     println(HHH3[i] in HHH3[1:i-1])
 end
@@ -22,6 +22,7 @@ Gexcisions = all_excisions(G);
 
 triangle_sort(HHH4)
 visualize_graph(HHH2[3])
+triangle_group(triangle_sort(HHH4))
 
 for i in 1:length(HHH4)
     HHH4i=HHH4[i]
@@ -32,7 +33,7 @@ has_isolated_triangle(HHH4[2])
 
 tropical_linear_space(vertex_edge_matrix(HHH3[1])) * (-tropical_linear_space(vertex_edge_matrix(HHH2[3])))
 
-tropical_intersection_product(HHH5[10], HHH4)
+tropical_intersection_product(HHH4[10], HHH3)
 
 
 
