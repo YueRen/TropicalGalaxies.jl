@@ -22,16 +22,15 @@ function edge_adjacency_matrix(g::Undirected_MultiGraph)
     m = length(edge_list)
     edge_adj_matrix = zeros(Int, m, m)
     
-    for i in 1:m
-        for j in 1:m
-            if i != j
-                edge_i = edge_list[i]
-                edge_j = edge_list[j]
-                # Two edges are adjacent if they share a common vertex
-                if edge_i[1] == edge_j[1] || edge_i[1] == edge_j[2] || 
-                   edge_i[2] == edge_j[1] || edge_i[2] == edge_j[2]
-                    edge_adj_matrix[i, j] = 1
-                end
+    for i in 1:m-1
+        for j in i+1:m
+            edge_i = edge_list[i]
+            edge_j = edge_list[j]
+            # Two edges are adjacent if they share a common vertex
+            if edge_i[1] == edge_j[1] || edge_i[1] == edge_j[2] || 
+                edge_i[2] == edge_j[1] || edge_i[2] == edge_j[2]
+                edge_adj_matrix[i, j] = 1
+                edge_adj_matrix[j, i] = 1
             end
         end
     end
@@ -323,11 +322,11 @@ function has_isolated_triangle(G::Undirected_MultiGraph)
 end
 
 
-function triangle_sort(G::Vector{Undirected_MultiGraph})
+function triangle_sort(Gs::Vector{Undirected_MultiGraph})
     triangles = Dict{Undirected_MultiGraph,Vector{Vector{Int}}}()
-    for g in G
-        key = g 
-        value = has_isolated_triangle(g)[2]
+    for G in Gs
+        key = G 
+        value = has_isolated_triangle(G)[2]
         triangles[key] = value
     end
 
