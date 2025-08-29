@@ -1,35 +1,28 @@
 include("helpers.jl")
 
-# TODO: investigate duplicates in excisions:
-G = triangle_chain(6)
+G = triangle_chain(7)
 @time Gexcisions = all_excisions(G);
-HHH5 = Gexcisions[5]
-HHH4 = Gexcisions[4]
-HHH3 = Gexcisions[3]
-for i in 2:length(HHH3)
-    println(HHH3[i] in HHH3[1:i-1])
+FFs = Gexcisions[6]
+HHs = Gexcisions[5]
+
+HHsSortedDict = triangle_group(triangle_sort(HHs))
+
+# we see that i=15 and i=18 contain many graphs
+for (i,(key,value)) in enumerate(HHsSortedDict)
+    println(i," ",length(value))
 end
 
-visualize_graph(HHH5[1])
-visualize_graph(HHH4[10])
-visualize_graph(HHH3[7])
-visualize_graph(HHH3[8])
-HHH3[7]==HHH3[8]
-edge_adjacency_matrix(HHH3[1]) == edge_adjacency_matrix(HHH3[8])
+fixedTriangle = collect(keys(HHsSortedDict))[15]
 
-G = laman_graph(6,1)
-Gexcisions = all_excisions(G);
-
-s = triangle_sort(HHH4)
-visualize_graph(HHH2[3])
-triangle_group(triangle_sort(HHH4))
-
-for i in 1:length(HHH4)
-    HHH4i=HHH4[i]
-    println(has_isolated_triangle(HHH4i))
+for (i,FF) in enumerate(FFs)
+    TropFF = tropical_linear_space(FF)
+    for (j,HH) in enumerate(HHsSortedDict[fixedTriangle])
+        TropHH = tropical_linear_space(HH)
+        println("($i,$j): ", TropFF * -TropHH)
+    end
 end
 
-has_isolated_triangle(HHH4[2])
+
 
 tropical_linear_space(vertex_edge_matrix(HHH3[1])) * (-tropical_linear_space(vertex_edge_matrix(HHH2[3])))
 
