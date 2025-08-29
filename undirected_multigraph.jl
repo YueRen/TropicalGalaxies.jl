@@ -245,9 +245,32 @@ function flatten_tuple_vector(v::Vector{Tuple{Int64, Int64}})::Vector{Int64}
     return result
 end
 
+# check if graph is fully excised, by checking if every vertex is contained in a single multiedge
 function is_fully_excised(G::Undirected_MultiGraph)
-    E = flatten_tuple_vector(unique(edges(G)))
-    return length(E)==length(unique(E))
+    V = flatten_tuple_vector(unique(edges(G)))
+    return length(V)==length(unique(V))
+end
+
+function is_almost_fully_excised(G::Undirected_MultiGraph)
+    V = flatten_tuple_vector(unique(edges(G)))
+
+    # identify vertices that appear more than once
+    VHighDegree = [ v for v in unique(V) if count(isequal(v), V) > 1 ]
+
+    # Case: only two adjacent multiedges
+    if length(VHighDegree) == 1
+        return true
+    end
+
+    # Case: a single multitriangle
+    if length(VHighDegree) == 3
+        edgesInvolvingHighDegreeVertices = [ e for e in unique(edges(G)) if any(v -> (v in VHighDegree), e) ]
+        if length(edgesInvolvingHighDegreeVertices) == 3
+            return true
+        end
+    end
+
+    return false
 end
 
 function all_single_excisions(G::Undirected_MultiGraph)
@@ -286,6 +309,7 @@ function all_excisions(G::Undirected_MultiGraph)
 end
 
 
+# TODO: account for the case where G has two isolated triangles
 function has_isolated_triangle(G::Undirected_MultiGraph)
 
     # find all vertices that are in the triangle
@@ -360,4 +384,66 @@ function tropical_intersection_product(G1::Undirected_MultiGraph, G2::Vector{Und
    end
 
    return product
+end
+
+
+# specialized function for tropical linear spaces of undirected multigraphs with
+# at most one triangle
+function tropical_linear_space(G::Undirected_MultiGraph)
+
+    isFullyExcised = is_fully_excised(G)
+    isAlmostFullyExcised = is_almost_fully_excised(G)
+    hasTriangle, triangle = has_isolated_triangle(G)
+
+    @assert isFullyExcised || isAlmostFullyExcised "graph needs to be fully or almost fully excised"
+
+    vertexEdgeMatrix = vertex_edge_matrix(G)
+    vertexEdgeColumns = [vertexEdgeMatrix[:,c] for c in 1:ncols(vertexEdgeMatrix)]
+    vertexEdgeColumnsUnique = unique(vertexEdgeColumns)
+    multiedges = Vector{Int}[]
+    for column in vertexEdgeColumnsUnique
+        push!(multiedges, findall(isequal(column), vertexEdgeColumns))
+    end
+
+    nonTriangleMultiedges = Vector{Int}[]
+    triangleMultiedges = Vector{Int}[]
+    for multiedge in multiedges
+        if multiedge in triangle
+            push!(triangleMultiedges, multiedge)
+        else
+            push!(nonTriangleMultiedges, multiedge)
+        end
+    end
+
+    # put all non-triangle multiedges into the lineality of TropG
+    linealityBasis = zero_matrix(QQ, length(nonTriangleMultiedges)+1, n_edges(G))
+    for (i, multiedge) in enumerate(nonTriangleMultiedges)
+        for j in multiedge
+            linealityBasis[i,j] = 1
+        end
+    end
+    for j in 1:ncols(linealityBasis)
+        linealityBasis[end,j] = 1
+    end
+
+    # put all triangle multiedges into the rays of TropG
+    verticesAndRays = zero_matrix(QQ, length(triangleMultiedges)+1, n_edges(G))
+    for (i, multiedge) in enumerate(triangleMultiedges)
+        for j in multiedge
+            verticesAndRays[i+1,j] = 1
+        end
+    end
+    if length(triangleMultiedges) > 0
+        incidenceMatrix = Oscar.incidence_matrix([[1,i+1] for i in 1:length(triangleMultiedges)])
+        rayIndices = [i+1 for i in 1:length(triangleMultiedges)]
+    else
+        incidenceMatrix = Oscar.incidence_matrix([[1]])
+        rayIndices = nothing
+    end
+
+    TropG = polyhedral_complex(incidenceMatrix,
+                               verticesAndRays,
+                               rayIndices,
+                               linealityBasis)
+    return Oscar.tropical_linear_space(TropG, ZZRingElem[1])
 end
