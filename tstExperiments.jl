@@ -20,7 +20,7 @@ edge_adjacency_matrix(HHH3[1]) == edge_adjacency_matrix(HHH3[8])
 G = laman_graph(6,1)
 Gexcisions = all_excisions(G);
 
-triangle_sort(HHH4)
+s = triangle_sort(HHH4)
 visualize_graph(HHH2[3])
 triangle_group(triangle_sort(HHH4))
 
@@ -33,7 +33,7 @@ has_isolated_triangle(HHH4[2])
 
 tropical_linear_space(vertex_edge_matrix(HHH3[1])) * (-tropical_linear_space(vertex_edge_matrix(HHH2[3])))
 
-tropical_intersection_product(HHH4[10], HHH3)
+tropical_intersection_product(HHH5[10], HHH4)
 
 
 
