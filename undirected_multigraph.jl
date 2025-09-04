@@ -373,18 +373,18 @@ function triangle_group(G::OrderedDict{Undirected_MultiGraph,Vector{Vector{Int}}
     return triangleGroups
 end
 
-function tropical_intersection_product(G1::Undirected_MultiGraph, G2::Vector{Undirected_MultiGraph})
-   MF = vertex_edge_matrix(G1)
-   TropF = tropical_linear_space(MF)
-   product = Vector{}()
-   for i in 1:length(G2)
-       MHHI = vertex_edge_matrix(G2[i])
-       TropHHI =  tropical_linear_space(MHHI)
-         push!(product, TropF * (-TropHHI))
-   end
+# function tropical_intersection_product(G1::Undirected_MultiGraph, G2::Vector{Undirected_MultiGraph})
+#    MF = vertex_edge_matrix(G1)
+#    TropF = tropical_linear_space(MF)
+#    product = Vector{}()
+#    for i in 1:length(G2)
+#        MHHI = vertex_edge_matrix(G2[i])
+#        TropHHI =  tropical_linear_space(MHHI)
+#          push!(product, TropF * (-TropHHI))
+#    end
 
-   return product
-end
+#    return product
+# end
 
 
 # specialized function for tropical linear spaces of undirected multigraphs with
@@ -446,4 +446,81 @@ function tropical_linear_space(G::Undirected_MultiGraph)
                                rayIndices,
                                linealityBasis)
     return Oscar.tropical_linear_space(TropG, ZZRingElem[1])
+end
+
+
+function extract_edge_labels(multigraph)
+    # Get unique edges (removes duplicates)
+    simple_edges = unique(edges(multigraph))
+    
+    # Create a vector to store labels for each unique edge
+    edge_labels = Vector{Vector{Int}}()
+
+    for simple_edge in simple_edges
+        # Find all edge indices that match this simple edge
+        matching_indices = []
+        for (i, edge) in enumerate(edges(multigraph))
+            if edge == simple_edge
+                push!(matching_indices, i)
+            end
+        end
+        push!(edge_labels, matching_indices)
+    end
+    return sort(edge_labels)
+end
+
+function chains(G::Undirected_MultiGraph)
+    MatG = vertex_edge_matrix(G)
+    MG = matroid_from_matrix_columns(MatG)
+    LG = lattice_of_flats(MG)
+    CFG = maximal_chains(LG)
+
+    maxChains = Vector{Vector{Vector{Int}}}()
+    for i in 1:length(CFG)
+        F = data.(CFG[i])
+        chain = Vector{Vector{Int}}()
+        prev = Set{Int64}()
+        for elem in F
+            curr = Set(elem)
+            new_elems = setdiff(curr, prev)
+            if !isempty(new_elems)
+                push!(chain, sort(collect(new_elems)))
+            end
+            prev = curr
+        end
+    push!(maxChains, sort(chain))
+    end
+    return maxChains
+end
+
+# function check_chain(G::Undirected_MultiGraph, n)
+#     Gexcisions = Vector{Undirected_MultiGraph}() 
+#     is_chain_valid = false
+#     maxChains = chains(G)
+#     g = all_excisions(G)
+#     for i in g[n]
+#         if extract_edge_labels(i) in maxChains
+#             is_chain_valid = true
+#         else 
+#             is_chain_valid = false
+#         end
+#         if is_chain_valid == true
+#             push!(Gexcisions, i)
+#         end
+#     end
+#     return Gexcisions
+# end
+
+function check_chain(G::Undirected_MultiGraph, n)
+    Gexcisions = Vector{Undirected_MultiGraph}() 
+    maxChains = chains(G)
+    g = all_excisions(G)
+    for i in g[n]
+        labels = extract_edge_labels(i)
+        is_chain_valid = any(chain -> isequal(Set(chain), Set(labels)), maxChains)
+        if is_chain_valid
+            push!(Gexcisions, i)
+        end
+    end
+    return Gexcisions
 end
