@@ -395,7 +395,11 @@ function tropical_linear_space(G::Undirected_MultiGraph)
     isAlmostFullyExcised = is_almost_fully_excised(G)
     hasTriangle, triangle = has_isolated_triangle(G)
 
-    @assert isFullyExcised || isAlmostFullyExcised "graph needs to be fully or almost fully excised"
+    if !isAlmostFullyExcised && !isFullyExcised && !hasTriangle
+        return Oscar.tropical_linear_space(vertex_edge_matrix(G))
+    end
+
+    # @assert isFullyExcised || isAlmostFullyExcised "graph needs to be fully or almost fully excised"
 
     vertexEdgeMatrix = vertex_edge_matrix(G)
     vertexEdgeColumns = [vertexEdgeMatrix[:,c] for c in 1:ncols(vertexEdgeMatrix)]
@@ -517,10 +521,11 @@ function check_chain(G::Undirected_MultiGraph, n)
     g = all_excisions(G)
     for i in g[n]
         labels = extract_edge_labels(i)
-        is_chain_valid = any(chain -> isequal(Set(chain), Set(labels)), maxChains)
+        # is_chain_valid = any(chain -> isequal(Set(chain), Set(labels)), maxChains)
+        is_chain_valid = labels in chains
         if is_chain_valid
             push!(Gexcisions, i)
         end
     end
     return Gexcisions
-end
+end 
