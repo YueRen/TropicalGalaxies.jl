@@ -360,6 +360,10 @@ function triangle_sort(Gs::Vector{Undirected_MultiGraph})
     return OrderedDict(sorted_triangles)
 end
 
+"""
+    triangle_group(G::OrderedDict{Undirected_MultiGraph,Vector{Vector{Int}}})
+Groups undirected multigraphs by their triangles. 
+"""
 function triangle_group(G::OrderedDict{Undirected_MultiGraph,Vector{Vector{Int}}})
     triangleGroups = Dict{Vector{Vector{Int}}, Vector{Undirected_MultiGraph}}()
     for (graph, triangle_labels) in G
@@ -389,6 +393,7 @@ end
 
 # specialized function for tropical linear spaces of undirected multigraphs with
 # at most one triangle
+# TODO: fix tropical_linear_space to give the correct intersection 
 function tropical_linear_space(G::Undirected_MultiGraph)
 
     isFullyExcised = is_fully_excised(G)
@@ -473,6 +478,11 @@ function extract_edge_labels(multigraph)
     return sort(edge_labels)
 end
 
+
+"""
+    chains(G::Undirected_MultiGraph)
+Return the maximal chains of flats of the matroid associated to the undirected multigraph G.
+"""
 function chains(G::Undirected_MultiGraph)
     MatG = vertex_edge_matrix(G)
     MG = matroid_from_matrix_columns(MatG)
