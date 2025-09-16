@@ -50,3 +50,19 @@ function coupling(F1::Vector{Vector{Int64}},F2::Vector{Vector{Int64}})
     println(couplingEdges)
     return undirected_multigraph(n, couplingEdges)
 end
+
+function coupling(F1::Vector{Vector{Int64}},F2::Vector{Vector{Int64}})
+    n = length(F1) + length(F2) - 2
+    m = sum(length.(F1))
+    couplingEdges = Vector{Tuple{Int,Int}}()
+    shift = length(F1) - 1
+    for i in 1:m
+        j = findfirst(f1 -> (i in f1), F1)
+        k = findfirst(f2 -> (i in f2), F2) + shift
+        # j = findfirst(f1 -> (i in f1), F1) - 1
+        # k = findfirst(f2 -> (i in f2), F2) + shift - 1
+        push!(couplingEdges, (j,k))
+    end
+    #println(couplingEdges)
+    return undirected_multigraph(n+1, couplingEdges)
+end
