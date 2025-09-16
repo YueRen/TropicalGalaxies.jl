@@ -57,10 +57,11 @@ non_zero_graphs = [(Undirected_MultiGraph(11, [(2, 9), (1, 3), (2, 9), (4, 8), (
 G = triangle_chain(7)
 F1 = FFs[15] 
 F2 = (Undirected_MultiGraph(11, [(2, 9), (1, 3), (2, 9), (4, 8), (2, 9), (10, 11), (10, 11), (5, 6), (10, 11), (7, 11), (7, 11)]))
+
 function arboreal_pair(G, F1, F2) 
     maxChains = chains(G)
-    T1 = extract_edge_labels(G1)
-    T2 = extract_edge_labels(G2)
+    T1 = extract_edge_labels(F1)
+    T2 = extract_edge_labels(F2)
     C = coupling(T1, T2)
     println(C)
     return is_forest(C)
