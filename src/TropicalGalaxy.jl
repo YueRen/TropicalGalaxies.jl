@@ -6,4 +6,5 @@ include("oscar_wishlist.jl")
 include("tst.jl")
 include("tstExperiments.jl")
 include("undirected_multigraph.jl")
+include("LamanGraphDatabase")
 end
