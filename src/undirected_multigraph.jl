@@ -309,7 +309,6 @@ function all_excisions(G::Undirected_MultiGraph)
 end
 
 
-# TODO: account for the case where G has two isolated triangles
 function has_isolated_triangle(G::Undirected_MultiGraph)
 
     # find all vertices that are in the triangle

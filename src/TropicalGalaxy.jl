@@ -1,10 +1,19 @@
 module TropicalGalaxy
-include("galaxytst.jl")
-include("helpers.jl")
+
+using Revise
+using Oscar
+using Plots
+using Graphs
+using GraphRecipes
+using OrderedCollections    
+
+import Base: -
+import Base: *
+import Oscar: rank
+
 include("laman_ds.jl")
 include("oscar_wishlist.jl")
-include("tst.jl")
-include("tstExperiments.jl")
 include("undirected_multigraph.jl")
-include("LamanGraphDatabase")
+include("helpers.jl")
+
 end
