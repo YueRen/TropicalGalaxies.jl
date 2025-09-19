@@ -1,20 +1,20 @@
 # Packages we rely on
-using Revise
-using Oscar
-using Plots
-using Graphs
-using GraphRecipes
-using OrderedCollections
+# using Revise
+# using Oscar
+# using Plots
+# using Graphs
+# using GraphRecipes
+# using OrderedCollections
 
-# Functions we extend
-import Base: -
-import Base: *
-import Oscar: rank
+# # Functions we extend
+# import Base: -
+# import Base: *
+# import Oscar: rank
 
 # Source files
-include("oscar_wishlist.jl")
-include("undirected_multigraph.jl")
-include("laman_ds.jl")
+# include("oscar_wishlist.jl")
+# include("undirected_multigraph.jl")
+# include("laman_ds.jl")
 
 function indicator_vector(m::Int, Fj::Vector{Int})
     v = zeros(Int, m)
