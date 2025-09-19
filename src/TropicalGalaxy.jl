@@ -9,6 +9,7 @@ using OrderedCollections
 
 import Base: -
 import Base: *
+import Base: +
 import Oscar: rank
 
 include("laman_ds.jl")

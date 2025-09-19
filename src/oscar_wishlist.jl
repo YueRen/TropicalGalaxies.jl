@@ -34,3 +34,42 @@ function reduce_chain(F)
         Fred[j] = push!(Fred[j], i)
     end
 end
+
+function translate_by_vector(
+  u::PointVector{QQFieldElem}, v::Vector{QQFieldElem}
+)
+  return u + v
+end
+
+function translate_by_vector(
+  u::RayVector{QQFieldElem}, ::Vector{QQFieldElem}
+)
+  return u
+end
+
+function +(v::Vector{QQFieldElem}, Sigma::PolyhedralComplex)
+  @req length(v) == ambient_dim(Sigma) "ambient dimension mismatch"
+  SigmaVertsAndRays = vertices_and_rays(Sigma)
+  SigmaRayIndices = findall(vr -> vr isa RayVector, SigmaVertsAndRays)
+  SigmaLineality = lineality_space(Sigma)
+  SigmaIncidence = maximal_polyhedra(IncidenceMatrix, Sigma)
+  return polyhedral_complex(
+    coefficient_field(Sigma),
+    SigmaIncidence,
+    translate_by_vector.(SigmaVertsAndRays, Ref(v)),
+    SigmaRayIndices,
+    SigmaLineality,
+  )
+end
++(Sigma::PolyhedralComplex, v::Vector{QQFieldElem}) = v + Sigma
+
+function +(v::Vector{QQFieldElem}, TropV::Oscar.TropicalVarietySupertype)
+    @req length(v) == ambient_dim(TropV) "ambient dimension mismatch"
+  return tropical_variety(
+    polyhedral_complex(TropV) + v,
+    multiplicities(TropV),
+    convention(TropV)
+  )
+end
+
++(TropV::Oscar.TropicalVarietySupertype, v::Vector{QQFieldElem}) = v + TropV
