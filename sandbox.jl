@@ -1,4 +1,5 @@
 using TropicalGalaxy
+using Oscar
 
 G = TropicalGalaxy.triangle_chain(7)
 @time Gexcisions = TropicalGalaxy.all_excisions(G);
@@ -6,17 +7,23 @@ FFs = Gexcisions[5]
 HHs = Gexcisions[4]
 F1 = FFs[5]
 F2 = HHs[52]
+HHsSortedDict = TropicalGalaxy.triangle_group(TropicalGalaxy.triangle_sort(HHs))
+fixedTriangle = collect(keys(HHsSortedDict))
+
 TropicalGalaxy.visualize_graph(F1)
 TropicalGalaxy.visualize_graph(F2)
 
 # 52 56 59
-v = [128, 129, 131, 132, 137, 138, 143, 144, 146, 147, 149, 150, 155, 156, 161, 162]
+# v = [128, 129, 131, 132, 137, 138, 143, 144, 146, 147, 149, 150, 155, 156, 161, 162]
 
 TropF = TropicalGalaxy.Oscar.tropical_linear_space(TropicalGalaxy.vertex_edge_matrix(F1))
 TropF2 = TropicalGalaxy.tropical_linear_space(F1)
 TropH = TropicalGalaxy.Oscar.tropical_linear_space(TropicalGalaxy.vertex_edge_matrix(F2))
-n = TropF * (-TropH)
-n1 = TropF2 * (-TropH)
+# n = TropF * (-TropH)
+# n1 = TropF2 * (-TropH)
+
+n = TropicalGalaxy.tropical_intersection_number(TropF, -TropH)
+n1 = TropicalGalaxy.tropical_intersection_number(TropF2, -TropH)
 
 u = TropicalGalaxy.Oscar.QQ.(rand(Int, TropicalGalaxy.Oscar.ambient_dim(TropF)))
 
@@ -48,11 +55,12 @@ TropicalGalaxy.Oscar.minimal_faces(TropicalGalaxy.Oscar.stable_intersection(Trop
 
 
 for (i, j) in enumerate(HHs) 
-    TropH = TropicalGalaxy.Oscar.tropical_linear_space(TropicalGalaxy.vertex_edge_matrix(j))
-    n = TropF * (-TropH)
-    n1 = TropF2 * (-TropH)
+    TropH = TropicalGalaxy.tropical_linear_space(j)
+    @time n = TropicalGalaxy.tropical_intersection_number(TropF, -TropH)
+    # n = TropF * (-TropH)
+    # n1 = TropF2 * (-TropH)
     if n >= 1
-        println("$i: ", n, " ", n1)
+        println("$i: ", n)
     end
 end
 
