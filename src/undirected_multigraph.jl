@@ -453,7 +453,7 @@ function tropical_linear_space(G::Undirected_MultiGraph)
                                verticesAndRays,
                                rayIndices,
                                linealityBasis)
-    return Oscar.tropical_linear_space(TropG, ZZRingElem[1])
+    return Oscar.tropical_linear_space(TropG, ones(ZZRingElem,nrows(incidenceMatrix)))
 end
 
 
@@ -537,4 +537,4 @@ function check_chain(G::Undirected_MultiGraph, n)
         end
     end
     return Gexcisions
-end 
+end
