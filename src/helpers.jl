@@ -53,3 +53,33 @@ function coupling(F1::Vector{Vector{Int64}},F2::Vector{Vector{Int64}})
     #println(couplingEdges)
     return undirected_multigraph(n+1, couplingEdges)
 end
+
+function intersection_graph(T1::Vector{Vector{Int}}, T2::Vector{Vector{Int}})
+    flats1 = [Set(f) for f in T1]
+    flats2 = [Set(f) for f in T2]
+    E = union(reduce(union, flats1), reduce(union, flats2))
+    reduced_flats1 = [f for f in flats1 if f != E]
+    reduced_flats2 = [f for f in flats2 if f != E]
+
+    # Number of vertices: reduced flats from both chains
+    n1 = length(reduced_flats1)
+    n2 = length(reduced_flats2)
+    n = n1 + n2
+
+    # Edges: connect vertex i in T1 to vertex j in T2 if both contain e
+    edges = Tuple{Int,Int}[]
+    for e in E
+        for (i, f1) in enumerate(reduced_flats1)
+            if e in f1
+                for (j, f2) in enumerate(reduced_flats2)
+                    if e in f2
+                        # Vertices are indexed 1..n1 for T1, n1+1..n for T2
+                        push!(edges, (i, n1 + j))
+                    end
+                end
+            end
+        end
+    end
+
+    return undirected_multigraph(n, edges)
+end
