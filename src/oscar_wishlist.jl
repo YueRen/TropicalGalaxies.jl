@@ -20,7 +20,7 @@ function Base.:(*)(TropV1::Oscar.TropicalVarietySupertype, TropV2::Oscar.Tropica
 
     return sum(multiplicities(stable_intersection((TropV1, TropV2))))
 end
-
+ 
 function reduce_chain(F)
     i = 0
     n = length(F)

@@ -173,6 +173,10 @@ end
 #     return true
 # end
 
+
+
+
+
 function is_forest(g::Undirected_MultiGraph)
     """
     is_forest checks if an undirected multigraph is a tree, forest or neither

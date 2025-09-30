@@ -1,10 +1,10 @@
 using TropicalGalaxy
 using Oscar
 
-G = TropicalGalaxy.triangle_chain(7)
+G = TropicalGalaxy.triangle_wheel(7)
 @time Gexcisions = TropicalGalaxy.all_excisions(G);
-FFs = Gexcisions[5]
-HHs = Gexcisions[4]
+FFs = Gexcisions[6]
+HHs = Gexcisions[6]
 F1 = FFs[5]
 F2 = HHs[52]
 HHsSortedDict = TropicalGalaxy.triangle_group(TropicalGalaxy.triangle_sort(HHs))
@@ -53,14 +53,14 @@ end
 # TODO fix stable intersection in Oscar, should not be empty
 TropicalGalaxy.Oscar.minimal_faces(TropicalGalaxy.Oscar.stable_intersection(TropF2_shifted, -TropH))
 
-
+non_zero_int = Vector{Int}()
 for (i, j) in enumerate(HHs) 
     TropH = TropicalGalaxy.tropical_linear_space(j)
     @time n = TropicalGalaxy.tropical_intersection_number(TropF, -TropH)
     # n = TropF * (-TropH)
     # n1 = TropF2 * (-TropH)
     if n >= 1
-        println("$i: ", n)
+        push!(non_zero_int, i)
     end
 end
 
@@ -141,15 +141,23 @@ for (i, l) in enumerate(L)
 end
 
 
+function arboreal_pair(G, F1, F2) 
+    maxChains = TropicalGalaxy.chains(G)
+    T1 = TropicalGalaxy.extract_edge_labels(F1)
+    T2 = TropicalGalaxy.extract_edge_labels(F2)
+    C = TropicalGalaxy.intersection_graph(T1, T2)
+    println(C)
+    return TropicalGalaxy.is_forest(C)
+end
+
+for i in non_zero_int
+    println(arboreal_pair(G, F1, HHs[i]))
+end
 
 
 
-TropicalGalaxy.Oscar.lineality_dim(poly_F)
-TropicalGalaxy.Oscar.lineality_dim(poly_F2)
+TropicalGalaxy.visualize_graph(TropicalGalaxy.Undirected_MultiGraph(11, [(1, 6), (2, 7), (2, 6), (3, 6), (3, 8), (4, 9), (4, 6), (4, 10), (5, 10), (6, 11), (6, 11)]))
 
-
-
-
-f1 = TropicalGalaxy.Oscar.f_vector(poly_F)
-f2 = TropicalGalaxy.Oscar.f_vector(poly_H) 
+TropicalGalaxy.visualize_graph(F1)
+TropicalGalaxy.visualize_graph(HHs[end - 2])
 
