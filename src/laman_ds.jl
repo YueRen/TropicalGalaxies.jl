@@ -68,7 +68,7 @@ function adjacency_matrix_to_undirected_multigraph(Gadj::Matrix{Int})
             end
         end
     end
-    return Undirected_MultiGraph(nrows(Gadj), Gedges)
+    return undirected_multigraph(nrows(Gadj), Gedges)
 end
 
 function laman_graph(n::Int, k::Int)

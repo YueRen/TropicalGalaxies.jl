@@ -1,23 +1,34 @@
 using OrderedCollections
 
-struct Undirected_MultiGraph
+abstract type AbstractMultigraph end
+
+mutable struct UndirectedMultigraph <: AbstractMultigraph
     n_vertices::Int
     edges::Vector{Tuple{Int, Int}}
 end
 
-function n_vertices(g::Undirected_MultiGraph)
+function n_vertices(g::UndirectedMultigraph)
     return g.n_vertices
 end
 
-function n_edges(g::Undirected_MultiGraph)
+function n_edges(g::UndirectedMultigraph)
     return length(g.edges)
 end
 
-function edges(g::Undirected_MultiGraph)
+function edges(g::UndirectedMultigraph)
     return g.edges
 end
 
-function edge_adjacency_matrix(g::Undirected_MultiGraph)
+function add_vertex!(G::UndirectedMultigraph)
+    G.n_vertices += 1 
+    return G.n_vertices
+end
+
+function add_edge!(G::UndirectedMultigraph, edge::Tuple{Int, Int})
+    push!(G.edges, edge)
+end
+
+function edge_adjacency_matrix(g::UndirectedMultigraph)
     edge_list = edges(g)
     m = length(edge_list)
     edge_adj_matrix = zeros(Int, m, m)
@@ -40,19 +51,17 @@ end
 
 function undirected_multigraph(n_vertices::Int, edges::Vector{Tuple{Int, Int}})
     @assert all(e->(collect(e)==sort(collect(e))), edges) "Edges must be sorted, e.g., (1,2) instead of (2,1)"
-    Undirected_MultiGraph(n_vertices, edges)
+    UndirectedMultigraph(n_vertices, edges)
 end
 
-# define == for Undirected_MultiGraph:
-# more complicated because we need to be agnostic towards vertex relabelings
-function Base.:(==)(g1::Undirected_MultiGraph, g2::Undirected_MultiGraph)
+
+function Base.:(==)(g1::UndirectedMultigraph, g2::UndirectedMultigraph)
     return n_vertices(g1) == n_vertices(g2) && edge_adjacency_matrix(g1) == edge_adjacency_matrix(g2)
 end
 
 
-
 function triangle_chain(n::Int)
- 
+    # constructs the triangle chain with n vertices
     @assert n > 2 "the input number of vertices must be greater than 2 to form a wheel graph"
 
     # Build the edge dictionary with  labels
@@ -64,12 +73,12 @@ function triangle_chain(n::Int)
         push!(edges, (i-2, i)) 
     end
     
-    return Undirected_MultiGraph(n, edges)
+    return UndirectedMultigraph(n, edges)
 end
 
 
 function triangle_wheel(n)
-    
+    # constructs the triangle wheel with n vertices
     @assert n > 2 "the input number of vertices must be greater than 2 to form a wheel graph"
 
     # Build the edge dictionary with  labels
@@ -85,7 +94,25 @@ function triangle_wheel(n)
 end
 
 
-function visualize_graph(multigraph)
+function edge_labels(multigraph::UndirectedMultigraph)
+    label_dict = Dict{Tuple{Int, Int}, String}()
+    for (label, (u, v)) in enumerate(edges(multigraph))
+            if haskey(label_dict, (u, v))
+                label_dict[(u, v)] *= ", " * string(label)
+                label_dict[(v, u)] = label_dict[(u, v)] 
+            else
+                label_dict[(u, v)] = string(label)
+                label_dict[(v, u)] = string(label)
+            end
+    end
+    return label_dict 
+end
+
+
+function visualize_graph(multigraph::UndirectedMultigraph;
+    vertexLabels::Vector = collect(1:n_vertices(multigraph)),
+    edgeLabels::Dict = edge_labels(multigraph)
+    )
     # Visualize the underlying simple graph, adds edge labels to graph
 
     # Removes duplicate edges 
@@ -97,30 +124,17 @@ function visualize_graph(multigraph)
         Graphs.add_edge!(g, u, v)
     end
 
-    # Edge labels 
-    label_dict = Dict{Tuple{Int,Int}, String}()
-
-    for (label, (u, v)) in enumerate(edges(multigraph))
-        if haskey(label_dict, (u, v))
-            label_dict[(u, v)] *= ", " * string(label)
-            label_dict[(v, u)] = label_dict[(u, v)] 
-        else
-            label_dict[(u, v)] = string(label)
-            label_dict[(v, u)] = string(label)
-        end
-    end
-
     graphplot(
         g,
-        names = 1:n_vertices(multigraph),
-        edgelabel = label_dict,
+        names = vertexLabels,
+        edgelabel = edgeLabels,
         nodeshape = :circle,
+        fontsize = 10,
         curves = false)
 end
 
 
-function excise(graph::Undirected_MultiGraph, excisedVertices::Vector{Int})
-
+function excise(graph::UndirectedMultigraph, excisedVertices::Vector{Int})
     @assert length(excisedVertices) == 2 "Currently, only multi-edge excisions supported"
 
     # quick and dirty test to check whether multi-edge is isolated
@@ -141,13 +155,13 @@ function excise(graph::Undirected_MultiGraph, excisedVertices::Vector{Int})
         else 
             push!(newEdges, (e[1], n+1))
         end
-    
     end
 
-    return Undirected_MultiGraph(n + 1, newEdges)
+    return UndirectedMultigraph(n + 1, newEdges)
 end 
 
-function vertex_edge_matrix(multigraph::Undirected_MultiGraph)
+
+function vertex_edge_matrix(multigraph::UndirectedMultigraph)
     m = length(edges(multigraph))
     n = n_vertices(multigraph)
     graph_matrix = zero_matrix(QQ, n, m)
@@ -159,79 +173,7 @@ function vertex_edge_matrix(multigraph::Undirected_MultiGraph)
 end
 
 
-# function is_tree(GG::Undirected_MultiGraph)
-#     if n_edges(GG) != n_vertices(GG) - 1
-#         return false
-#     end
-#     e = edges(GG)
-    
-#     # Check every vertex is contained in some edge
-    
-#     for v in 1:n_vertices(GG)
-#         findfirst(u -> (v in u), e) === nothing && return false
-#     end
-#     return true
-# end
-
-
-
-
-
-function is_forest(g::Undirected_MultiGraph)
-    """
-    is_forest checks if an undirected multigraph is a tree, forest or neither
-    tree -> connected and acyclic
-    forest -> acyclic but not connected
-    neither -> has cycles
-    """
-
-    n = n_vertices(g)
-    e = edges(g)
-
-    # Adjacency list
-    adj = Dict{Int, Vector{Int}}()
-    for (u, v) in e
-        push!(get!(adj, u, Int[]), v)
-        push!(get!(adj, v, Int[]), u)
-    end
-    
-    has_cycle = Ref(false)
-    components = 0
-    visited = fill(false, n)
-    
-    function dfs(current, visited, parent)
-        visited[current] = true
-        for i in adj[current]
-            if !visited[i]
-                dfs(i, visited, current)
-            elseif i != parent
-                has_cycle[] = true
-                return false # cycle detected
-            end
-        end
-    end
-
-    for v in 1:n
-        if !visited[v]
-            components += 1
-            dfs(v, visited, -1)
-
-        end
-    end
-
-    if has_cycle[]
-        return "neither"
-       
-    elseif components == 1
-        return "tree"
-    else 
-        return "forest"
-    end
-        
-end
-
-
-function rank(G::Undirected_MultiGraph)
+function rank(G::UndirectedMultigraph)
     MG = vertex_edge_matrix(G)
     return rank(MG)
 end
@@ -250,12 +192,12 @@ function flatten_tuple_vector(v::Vector{Tuple{Int64, Int64}})::Vector{Int64}
 end
 
 # check if graph is fully excised, by checking if every vertex is contained in a single multiedge
-function is_fully_excised(G::Undirected_MultiGraph)
+function is_fully_excised(G::UndirectedMultigraph)
     V = flatten_tuple_vector(unique(edges(G)))
     return length(V)==length(unique(V))
 end
 
-function is_almost_fully_excised(G::Undirected_MultiGraph)
+function is_almost_fully_excised(G::UndirectedMultigraph)
     V = flatten_tuple_vector(unique(edges(G)))
 
     # identify vertices that appear more than once
@@ -277,43 +219,40 @@ function is_almost_fully_excised(G::Undirected_MultiGraph)
     return false
 end
 
-function all_single_excisions(G::Undirected_MultiGraph)
+
+# all_multiedge_excisions returns two vectors, 
+# first is a vector of undirected multigraphs containing the multiedge excisions of G 
+# second is a vector of vector of multiedges that led to the aforementioned excisions
+
+function all_multiedge_excisions(G::UndirectedMultigraph)
+    Gexcisions = Vector{UndirectedMultigraph}()
+    Gmultiedges = Vector{Vector{Int}}()
+
     if is_fully_excised(G)
-        return Undirected_MultiGraph[]
+        return Gexcisions, Gmultiedges
     end
-    Gexcisions = Undirected_MultiGraph[]
-    for e in unique(edges(G))
+    uniqueEdges = unique(edges(G)) 
+    nonIsolatedEdges = []
+    for e in uniqueEdges
+        if length(findall(edge -> ((e[1] in edge) || (e[2] in edge)), uniqueEdges)) > 1
+            push!(nonIsolatedEdges, e)
+        end
+    end
+
+    for e in nonIsolatedEdges
         Gexcision = excise(G, [e[1], e[2]])
-        if Gexcision != G && !(Gexcision in Gexcisions)
+        if (Gexcision != G) && Gexcision ∉ Gexcisions
+            Gmultiedge = findall(isequal(e),edges(G)) # all edge indices connecting e[1] and e[2]
             push!(Gexcisions, Gexcision)
+            push!(Gmultiedges, Gmultiedge)
         end
     end
-    return Gexcisions
-end
 
-function all_excisions(G::Undirected_MultiGraph)
-    allExcisions = Vector{Undirected_MultiGraph}[]
-    workingList = [G]
-    i = 0
-    while !isempty(workingList)
-        i += 1
-        println("Excision round $i, working list size: $(length(workingList))")
-        push!(allExcisions, workingList)
-        newExcisions = Undirected_MultiGraph[]
-        for HH in workingList
-            for HHnew in all_single_excisions(HH)
-                if !(HHnew in newExcisions)
-                    push!(newExcisions, HHnew)
-                end
-            end
-        end
-        workingList = newExcisions
-    end
-    return allExcisions
+    return Gexcisions, Gmultiedges
 end
 
 
-function has_isolated_triangle(G::Undirected_MultiGraph)
+function has_isolated_triangle(G::UndirectedMultigraph)
 
     # find all vertices that are in the triangle
     E = edges(G)
@@ -349,8 +288,8 @@ function has_isolated_triangle(G::Undirected_MultiGraph)
 end
 
 
-function triangle_sort(Gs::Vector{Undirected_MultiGraph})
-    triangles = Dict{Undirected_MultiGraph,Vector{Vector{Int}}}()
+function triangle_sort(Gs::Vector{UndirectedMultigraph})
+    triangles = Dict{UndirectedMultigraph,Vector{Vector{Int}}}()
     for G in Gs
         key = G 
         value = has_isolated_triangle(G)[2]
@@ -363,12 +302,9 @@ function triangle_sort(Gs::Vector{Undirected_MultiGraph})
     return OrderedDict(sorted_triangles)
 end
 
-"""
-    triangle_group(G::OrderedDict{Undirected_MultiGraph,Vector{Vector{Int}}})
-Groups undirected multigraphs by their triangles. 
-"""
-function triangle_group(G::OrderedDict{Undirected_MultiGraph,Vector{Vector{Int}}})
-    triangleGroups = Dict{Vector{Vector{Int}}, Vector{Undirected_MultiGraph}}()
+
+function triangle_group(G::OrderedDict{UndirectedMultigraph,Vector{Vector{Int}}})
+    triangleGroups = Dict{Vector{Vector{Int}}, Vector{UndirectedMultigraph}}()
     for (graph, triangle_labels) in G
         # Use the triangle labels directly as the key instead of converting to string
         if haskey(triangleGroups, triangle_labels)
@@ -380,24 +316,8 @@ function triangle_group(G::OrderedDict{Undirected_MultiGraph,Vector{Vector{Int}}
     return triangleGroups
 end
 
-# function tropical_intersection_product(G1::Undirected_MultiGraph, G2::Vector{Undirected_MultiGraph})
-#    MF = vertex_edge_matrix(G1)
-#    TropF = tropical_linear_space(MF)
-#    product = Vector{}()
-#    for i in 1:length(G2)
-#        MHHI = vertex_edge_matrix(G2[i])
-#        TropHHI =  tropical_linear_space(MHHI)
-#          push!(product, TropF * (-TropHHI))
-#    end
 
-#    return product
-# end
-
-
-# specialized function for tropical linear spaces of undirected multigraphs with
-# at most one triangle
-# TODO: fix tropical_linear_space to give the correct intersection 
-function tropical_linear_space(G::Undirected_MultiGraph)
+function tropical_linear_space(G::UndirectedMultigraph)
 
     isFullyExcised = is_fully_excised(G)
     isAlmostFullyExcised = is_almost_fully_excised(G)
@@ -482,11 +402,7 @@ function extract_edge_labels(multigraph)
 end
 
 
-"""
-    chains(G::Undirected_MultiGraph)
-Return the maximal chains of flats of the matroid associated to the undirected multigraph G.
-"""
-function chains(G::Undirected_MultiGraph)
+function chains(G::UndirectedMultigraph)
     MatG = vertex_edge_matrix(G)
     MG = matroid_from_matrix_columns(MatG)
     LG = lattice_of_flats(MG)
@@ -510,26 +426,9 @@ function chains(G::Undirected_MultiGraph)
     return maxChains
 end
 
-# function check_chain(G::Undirected_MultiGraph, n)
-#     Gexcisions = Vector{Undirected_MultiGraph}() 
-#     is_chain_valid = false
-#     maxChains = chains(G)
-#     g = all_excisions(G)
-#     for i in g[n]
-#         if extract_edge_labels(i) in maxChains
-#             is_chain_valid = true
-#         else 
-#             is_chain_valid = false
-#         end
-#         if is_chain_valid == true
-#             push!(Gexcisions, i)
-#         end
-#     end
-#     return Gexcisions
-# end
 
-function check_chain(G::Undirected_MultiGraph, n)
-    Gexcisions = Vector{Undirected_MultiGraph}() 
+function check_chain(G::UndirectedMultigraph, n)
+    Gexcisions = Vector{UndirectedMultigraph}() 
     maxChains = chains(G)
     g = all_excisions(G)
     for i in g[n]
