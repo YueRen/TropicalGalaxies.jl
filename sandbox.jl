@@ -1,17 +1,29 @@
-using TropicalGalaxy
+using TropicalGalaxies
 using Oscar
 
-G = TropicalGalaxy.triangle_wheel(7)
-@time Gexcisions = TropicalGalaxy.all_excisions(G);
+G = triangle_chain(4)
+
+gamma = tropical_galaxy(G)
+visualize_excision_graph(gamma)
+
+visualize_graph(TropicalGalaxies.excision_graph(gamma))
+
+
+
+Gexcisions = all_excisions(G);
 FFs = Gexcisions[6]
-HHs = Gexcisions[6]
+HHs = Gexcisions[3]
+HHs[1][2]
+
+visualize_graph(HHs[1][1])
+
 F1 = FFs[5]
 F2 = HHs[52]
-HHsSortedDict = TropicalGalaxy.triangle_group(TropicalGalaxy.triangle_sort(HHs))
+HHsSortedDict = triangle_group(triangle_sort(HHs))
 fixedTriangle = collect(keys(HHsSortedDict))
 
-TropicalGalaxy.visualize_graph(F1)
-TropicalGalaxy.visualize_graph(F2)
+visualize_graph(F1)
+visualize_graph(F2)
 
 # 52 56 59
 # v = [128, 129, 131, 132, 137, 138, 143, 144, 146, 147, 149, 150, 155, 156, 161, 162]
@@ -161,3 +173,28 @@ TropicalGalaxy.visualize_graph(TropicalGalaxy.Undirected_MultiGraph(11, [(1, 6),
 TropicalGalaxy.visualize_graph(F1)
 TropicalGalaxy.visualize_graph(HHs[end - 2])
 
+
+using TropicalGalaxies
+G = triangle_chain(4)
+sigma = tropical_star(G.n_vertices, G.edges)
+linear_space(sigma)
+visualize_graph(sigma)
+visualize_graph(excise(sigma, [1, 2]))
+
+
+Γ = tropical_galaxy(G)
+explore_all(Γ)
+Γ.stars
+Γ.excision_graph
+Γ.excision_graph_edge_labels
+visualize_excision_graph(Γ) 
+
+
+exploration = explore_rand(Γ)
+exploration[5].excision_path
+
+visualize_graph(exploration[5])
+
+node_labels, edge_labels = TropicalGalaxies.format_excision(exploration[5].excision_path)
+
+visualize_exploration(exploration[5], exploration[5].excision_path)

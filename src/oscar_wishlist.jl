@@ -91,25 +91,24 @@ end
 
 
 function tropical_intersection_number(T1, T2)
-    polys_T1 = TropicalGalaxy.Oscar.maximal_polyhedra(T1)
-    polys_T2 = TropicalGalaxy.Oscar.maximal_polyhedra(T2)
+    polys_T1 = Oscar.maximal_polyhedra(T1)
+    polys_T2 = Oscar.maximal_polyhedra(T2)
     if length(polys_T1) < length(polys_T2)
         T1, T2 = T2, T1
         polys_T1, polys_T2 = polys_T2, polys_T1
     end
 
-    ambient_dim = TropicalGalaxy.Oscar.ambient_dim(T2)
-    u = TropicalGalaxy.Oscar.QQ.(rand(Int, ambient_dim))
-    # T2_shifted = TropicalGalaxy.Oscar.tropical_variety(T2) + u
+    ambient_dim = Oscar.ambient_dim(T2)
+    u = Oscar.QQ.(rand(Int, ambient_dim))
     T2_shifted = T2 + u
 
     mult = 0
 
     for sigma in polys_T1
-        for tau in TropicalGalaxy.Oscar.maximal_polyhedra(T2_shifted)
+        for tau in Oscar.maximal_polyhedra(T2_shifted)
             inter = intersect(sigma, tau)
-            if TropicalGalaxy.Oscar.dim(inter) >= 0
-                m = TropicalGalaxy.tropical_intersection_multiplicity(sigma, tau)
+            if Oscar.dim(inter) >= 0
+                m = tropical_intersection_multiplicity(sigma, tau)
                 mult += m
             end
         end
