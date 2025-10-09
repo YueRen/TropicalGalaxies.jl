@@ -1,5 +1,3 @@
-using OrderedCollections
-
 abstract type AbstractMultigraph end
 
 mutable struct UndirectedMultigraph <: AbstractMultigraph
@@ -241,7 +239,7 @@ function all_multiedge_excisions(G::UndirectedMultigraph)
 
     for e in nonIsolatedEdges
         Gexcision = excise(G, [e[1], e[2]])
-        if (Gexcision != G) && Gexcision ∉ Gexcisions
+        if Gexcision != G
             Gmultiedge = findall(isequal(e),edges(G)) # all edge indices connecting e[1] and e[2]
             push!(Gexcisions, Gexcision)
             push!(Gmultiedges, Gmultiedge)

@@ -21,7 +21,7 @@ function is_fully_excised(HH::TropicalStar)
 end
 
 
-function linear_space(HH::TropicalStar)
+function tropical_linear_space(HH::TropicalStar)
     if HH.linearSpace === nothing
         HH.linearSpace = tropical_linear_space(HH.graph)
     end

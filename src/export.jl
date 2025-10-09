@@ -1,7 +1,14 @@
-export UndirectedMultigraph, TropicalStar, TropicalGalaxy,undirected_multigraph, tropical_star, tropical_galaxy,
-        linear_space, excise, tropical_intersection_product,
-        explore_all, explore_rand, visualize_excision_graph,
-        triangle_chain, triangle_wheel, 
-        visualize_graph, all_excisions, 
-        tropical_linear_space, 
-        arboreal_pair_experiment
+export all_excisions
+export excise
+export tropical_linear_space
+export triangle_chain
+export triangle_wheel
+export UndirectedMultigraph
+export undirected_multigraph
+export TropicalGalaxy
+export tropical_galaxy
+export TropicalStar
+export tropical_star
+export tropical_intersection_product
+export visualize_excision_graph
+export visualize_graph

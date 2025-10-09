@@ -8,21 +8,43 @@ end
 stars(Γ::TropicalGalaxy) = Γ.stars
 excision_graph(Γ::TropicalGalaxy) = Γ.excision_graph
 excision_graph_edge_labels(Γ::TropicalGalaxy) = Γ.excision_graph_edge_labels
-laman_graph(Γ::TropicalGalaxy) = first(stars(Γ))
+laman_graph(Γ::TropicalGalaxy) = graph(first(stars(Γ)))
+
+function Base.show(io::IO, Γ::TropicalGalaxy)
+    println(io, "A tropical galaxy with $(length(stars(Γ))) stars and $(length(edges(excision_graph(Γ)))) edges of the graph")
+    println(io, laman_graph(Γ))
+end
 
 
-# function tropical_galaxy(g::UndirectedMultigraph)
-#     return TropicalGalaxy([tropical_star(g)], UndirectedMultigraph(1, Tuple{Int, Int}[]), Vector{Int}[])
-# end
+@doc raw"""
+    tropical_galaxy(G::UndirectedMultigraph)
 
+Return the tropical galaxy of a Laman graph `G`.
 
+See `visualize_excision_graph` for visualizing tropical galaxies.
+
+Set `Oscar.set_verbosity_level(:TropicalGalaxy,1)` to see progress of the
+construction.
+
+!!! Warning
+    Does not check if `G` is Laman.
+
+# Examples
+```jldoctest
+julia> G = triangle_chain(4)
+UndirectedMultigraph(4, [(1, 2), (1, 3), (2, 3), (3, 4), (2, 4)])
+
+julia> gamma = tropical_galaxy(G)
+A tropical galaxy with 15 stars and 18 edges of the graph
+UndirectedMultigraph(4, [(1, 2), (1, 3), (2, 3), (3, 4), (2, 4)])
+
+```
+"""
 function tropical_galaxy(G::UndirectedMultigraph)
     excisions = [G]
     excisionGraph = undirected_multigraph(1, Tuple{Int, Int}[])
     edgeLabels = Vector{Vector{Int}}[]
     workingList = [1] # indices of stars to be excised
-    println(!isempty(workingList))
-    println(!is_fully_excised(excisions[first(workingList)]))
     l = 0
     while !isempty(workingList) && !is_fully_excised(excisions[first(workingList)])
         l += 1
@@ -30,7 +52,7 @@ function tropical_galaxy(G::UndirectedMultigraph)
             println(workingList)
             return excisions[first(workingList)]
         end
-        println("Excision round $l, working list size: $(length(workingList))")
+        @vprintln :TropicalGalaxy "Excision round $l, working list size: $(length(workingList))"
         newWorkingList = Int[]
         for oldStarIndex in workingList
             GG = excisions[oldStarIndex]
@@ -52,7 +74,6 @@ function tropical_galaxy(G::UndirectedMultigraph)
                         push!(edgeLabels, [ee])
                     else
                         # old star old edge
-                        println("!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                         push!(edgeLabels[oldEdgeIndex], ee)
                     end
                 end
@@ -60,9 +81,6 @@ function tropical_galaxy(G::UndirectedMultigraph)
         end
         workingList = newWorkingList
     end
-    println(tropical_star.(excisions))
-    println(edgeLabels)
-    println(excisionGraph)
     return TropicalGalaxy(tropical_star.(excisions), excisionGraph, edgeLabels)
 end
 

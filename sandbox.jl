@@ -1,8 +1,8 @@
+using Revise
 using TropicalGalaxies
 using Oscar
 
 G = triangle_chain(4)
-
 gamma = tropical_galaxy(G)
 visualize_excision_graph(gamma)
 
