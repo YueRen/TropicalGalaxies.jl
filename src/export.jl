@@ -2,6 +2,7 @@ export all_multiedge_excisions
 export arboreal_pair
 export excise
 export graph
+export intersection_graph
 export is_almost_fully_excised
 export is_fully_excised
 export laman_graph
