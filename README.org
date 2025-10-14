@@ -104,6 +104,6 @@ The intersection graph of the arboreal pair $I_ {\mathbb{F}_1,\mathbb{F}_2}$:
 #+ATTR_HTML: :width 300px
 [[./images/intersection_graph_tree.png]]
 
-The intersection graph of the non-arboreal pair $I _{\mathbb{F}_2,\mathbb{F}_3}$:
+The intersection graph of the non-arboreal pair $I_ {\mathbb{F}_2,\mathbb{F}_3}$:
 #+ATTR_HTML: :width 300px
 [[./images/intersection_graph_nontree.png]]
