@@ -42,7 +42,7 @@ To excise a multiedge, specify its pair of vertices:
 #+end_src
 
 
-The Laman graph $G$ (see `visualize`):
+The Laman graph $G$ (see ~visualize~):
 #+ATTR_HTML: :width 300px
 [[./images/laman_graph.png]]
 
@@ -62,6 +62,6 @@ To construct a tropical galaxy, specify its Laman graph:
   Gamma = tropical_galaxy(G)
 #+end_src
 
-The tropical galaxy $\Gamma_G$ (see `visualize_excision_graph`):
+The tropical galaxy $\Gamma_G$ (see ~visualize_excision_graph~):
 #+ATTR_HTML: :width 600px
 [[./images/tropical_galaxy.png]]
