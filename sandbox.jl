@@ -3,12 +3,13 @@ using TropicalGalaxies
 G = triangle_chain(4)
 visualize_graph(G)
 
-gamma = tropical_galaxy(G)
 visualize_excision_graph(gamma)
 
 visualize_graph(TropicalGalaxies.excision_graph(gamma))
 
-
+G = laman_graph(5,1)
+gamma = tropical_galaxy(G)
+stars(gamma)
 
 Gexcisions = all_multiedge_excisions(G);
 FFs = Gexcisions[1]
