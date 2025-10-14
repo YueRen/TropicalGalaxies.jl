@@ -471,25 +471,25 @@ function tropical_linear_space(G::UndirectedMultigraph)
 end
 
 
-# function extract_edge_labels(multigraph)
-#     # Get unique edges (removes duplicates)
-#     simple_edges = unique(edges(multigraph))
+function extract_edge_labels(multigraph)
+    # Get unique edges (removes duplicates)
+    simple_edges = unique(edges(multigraph))
     
-#     # Create a vector to store labels for each unique edge
-#     edge_labels = Vector{Vector{Int}}()
+    # Create a vector to store labels for each unique edge
+    edge_labels = Vector{Vector{Int}}()
 
-#     for simple_edge in simple_edges
-#         # Find all edge indices that match this simple edge
-#         matching_indices = []
-#         for (i, edge) in enumerate(edges(multigraph))
-#             if edge == simple_edge
-#                 push!(matching_indices, i)
-#             end
-#         end
-#         push!(edge_labels, matching_indices)
-#     end
-#     return sort(edge_labels)
-# end
+    for simple_edge in simple_edges
+        # Find all edge indices that match this simple edge
+        matching_indices = []
+        for (i, edge) in enumerate(edges(multigraph))
+            if edge == simple_edge
+                push!(matching_indices, i)
+            end
+        end
+        push!(edge_labels, matching_indices)
+    end
+    return sort(edge_labels)
+end
 
 
 # function chains(G::UndirectedMultigraph)

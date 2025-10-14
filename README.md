@@ -8,8 +8,10 @@ julia> using Pkg
 julia> Pkg.add("Oscar")
 julia> using Oscar
 
+---
 
 ## Examples of usage
+
 Tropical Galaxy
 ```
 G = triangle_chain(4)
@@ -18,6 +20,8 @@ gamma = tropical_galaxy(G)
 ![triangle_chain(4)](/data/triangle_chain(4).png)
 ![tropical_galaxy](/data/tropical_galaxy.png)
 
+*** 
+
 Excisions
 ```
 G = triangle_chain(3) 
@@ -25,6 +29,8 @@ H = excise(G, [1, 3])
 ```
 ![triangle_chain(3)](/data/triangle_chain(3).png)
 ![triange_chain(3)_excised](/data/triangle_chain3_ex.png)
+
+*** 
 
 Arboreal Pairs
 ```

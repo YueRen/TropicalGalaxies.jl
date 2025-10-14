@@ -1,6 +1,10 @@
 export all_multiedge_excisions
 export arboreal_pair
 export excise
+export graph
+export is_fully_exised
+export laman_graph
+export stars
 export tropical_linear_space
 export triangle_chain
 export triangle_wheel

@@ -54,10 +54,6 @@ function tropical_galaxy(G::UndirectedMultigraph)
     l = 0
     while !isempty(workingList) && !is_fully_excised(excisions[first(workingList)])
         l += 1
-        if l > 2
-            println(workingList)
-            return excisions[first(workingList)]
-        end
         @vprintln :TropicalGalaxy "Excision round $l, working list size: $(length(workingList))"
         newWorkingList = Int[]
         for oldStarIndex in workingList
