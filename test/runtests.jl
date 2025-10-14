@@ -1,6 +1,6 @@
-using SummerProject2025
+using TropicalGalaxies
 using Test
 
-@testset "SummerProject2025.jl" begin
+@testset "TropicalGalaxy.jl" begin
     # Write your tests here.
 end

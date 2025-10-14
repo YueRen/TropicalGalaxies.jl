@@ -1,5 +1,30 @@
+################################################################################
+#
+# Functions for constructing Laman graphs using the following database by Capco et al
+# https://zenodo.org/record/1245517
+#
+################################################################################
+
+function load_laman_graphs_as_ints(n::Int)
+    LGD = include(joinpath(@__DIR__, "..", "data", "LamanGraphDatabase", "LamanGraphs"*string(n)*".txt"))
+    return LGD
+end
+
+@doc raw"""
+    n_laman_graphs(n::Int)
+
+Return the number of Laman graphs on `n` vertices as in the following database by Capco
+et al:
+https://zenodo.org/record/1245517
+
+# Examples
+```jldoctest
+julia> n_laman_graphs(5)
+3
+```
+"""
 function n_laman_graphs(n::Int)
-    LGD = include("LamanGraphDatabase/LamanGraphs"*string(n)*".txt")
+    LGD = load_laman_graphs_as_ints(n::Int)
     return length(LGD)
 end
 
@@ -68,12 +93,33 @@ function adjacency_matrix_to_undirected_multigraph(Gadj::Matrix{Int})
             end
         end
     end
-    return Undirected_MultiGraph(nrows(Gadj), Gedges)
+    return undirected_multigraph(nrows(Gadj), Gedges)
 end
 
+
+@doc raw"""
+    laman_graph(n::Int, k::Int)
+
+Return `k`-th Laman graph on `n` vertices as in the following database by Capco
+et al:
+https://zenodo.org/record/1245517
+
+# Examples
+```jldoctest
+julia> G1 = laman_graph(5, 1)
+UndirectedMultigraph(5, [(1, 4), (1, 5), (2, 3), (2, 4), (2, 5), (3, 4), (3, 5)])
+
+julia> G2 = laman_graph(5, 2)
+UndirectedMultigraph(5, [(1, 4), (1, 5), (2, 3), (2, 5), (3, 4), (3, 5), (4, 5)])
+
+julia> G3 = laman_graph(5, 3)
+UndirectedMultigraph(5, [(1, 4), (1, 5), (2, 4), (2, 5), (3, 4), (3, 5), (4, 5)])
+
+```
+"""
 function laman_graph(n::Int, k::Int)
     @assert 1 <= k <= n_laman_graphs(n)
-    LGD = include("LamanGraphDatabase/LamanGraphs"*string(n)*".txt")
+    LGD = load_laman_graphs_as_ints(n)
     Gint = LGD[k]
     Gbin = int_to_binary_vector(Gint)
     Gadj = binary_vector_to_adjacency_matrix(Gbin)
