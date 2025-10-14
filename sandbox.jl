@@ -1,8 +1,8 @@
-using Revise
 using TropicalGalaxies
-using Oscar
 
 G = triangle_chain(4)
+visualize_graph(G)
+
 gamma = tropical_galaxy(G)
 visualize_excision_graph(gamma)
 
@@ -10,12 +10,10 @@ visualize_graph(TropicalGalaxies.excision_graph(gamma))
 
 
 
-Gexcisions = all_excisions(G);
-FFs = Gexcisions[6]
-HHs = Gexcisions[3]
-HHs[1][2]
+Gexcisions = all_multiedge_excisions(G);
+FFs = Gexcisions[1]
+HHs = Gexcisions[2]
 
-visualize_graph(HHs[1][1])
 
 F1 = FFs[5]
 F2 = HHs[52]

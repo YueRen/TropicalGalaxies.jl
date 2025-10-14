@@ -1,5 +1,5 @@
 function n_laman_graphs(n::Int)
-    LGD = include("LamanGraphDatabase/LamanGraphs"*string(n)*".txt")
+    LGD = include("../data/LamanGraphDatabase/LamanGraphs"*string(n)*".txt")
     return length(LGD)
 end
 
@@ -73,7 +73,7 @@ end
 
 function laman_graph(n::Int, k::Int)
     @assert 1 <= k <= n_laman_graphs(n)
-    LGD = include("LamanGraphDatabase/LamanGraphs"*string(n)*".txt")
+    LGD = include("../data/LamanGraphDatabase/LamanGraphs"*string(n)*".txt")
     Gint = LGD[k]
     Gbin = int_to_binary_vector(Gint)
     Gadj = binary_vector_to_adjacency_matrix(Gbin)

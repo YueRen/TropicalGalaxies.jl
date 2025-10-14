@@ -1,4 +1,5 @@
-export all_excisions
+export all_multiedge_excisions
+export arboreal_pair
 export excise
 export tropical_linear_space
 export triangle_chain

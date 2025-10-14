@@ -13,13 +13,9 @@ function Base.:(-)(TropV::Oscar.TropicalVarietySupertype)
     return tropical_variety(polyhedralComplex, mults, convention(TropV))
 end
 
-function Base.:(*)(TropV1::Oscar.TropicalVarietySupertype, TropV2::Oscar.TropicalVarietySupertype)
-
-    # TODO: add basic assertions to check that TropV1 and TropV2 are as expected
-    # (of complementary dimension modulo lineality)
-
-    return sum(multiplicities(stable_intersection((TropV1, TropV2))))
-end
+# function Base.:(*)(TropV1::Oscar.TropicalVarietySupertype, TropV2::Oscar.TropicalVarietySupertype)
+#     return sum(multiplicities(stable_intersection((TropV1, TropV2))))
+# end
  
 function reduce_chain(F)
     i = 0

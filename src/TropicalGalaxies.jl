@@ -1,10 +1,11 @@
 module TropicalGalaxies
 
+using Revise
 using Oscar
 using Plots # TODO: check which of the following are actually needed
 using Graphs
 using GraphRecipes
-using OrderedCollections    
+using OrderedCollections
 
 include("import.jl")
 include("laman_ds.jl")
@@ -23,4 +24,3 @@ function __init__()
 end
 
 end
-
