@@ -1,4 +1,10 @@
-mutable struct TropicalGalaxy <: AbstractMultigraph
+################################################################################
+#
+#  Tropical Galaxies
+#
+################################################################################
+
+mutable struct TropicalGalaxy
     stars::Vector{TropicalStar}
     excision_graph::UndirectedMultigraph
     excision_graph_edge_labels
@@ -85,91 +91,16 @@ function tropical_galaxy(G::UndirectedMultigraph)
 end
 
 
-# function explore_all(Γ::TropicalGalaxy)
-#     if isempty(Γ.stars)
-#         Gexcisions = all_excisions(Γ.source_graph)
-#         Γ.stars = Vector{Vector{TropicalStar}}()
-#         Γ.excision_graph_edge_labels = Vector{Vector{String}}()
-#         n_vert = 1 
-#         edges = Tuple{Int, Int}[]
+@doc raw"""
+    visualize_excision_graph(Γ::TropicalGalaxy)
 
-#         # map each unique excised graph to a vertex in excised_graph 
-#         vertex_map = Dict{Any, Int}()
-#         vertex_map[Γ.source_graph] = 1
-#         next_id = 2 
- 
+Visualize excision graph of a Tropical Galaxy Γ.
 
-#         # add root node = source graph
-#         # 
-#         # vertex_map[Γ.source_graph] = next_id
-#         # nextid += 1
-
-#         for round in Gexcisions
-#             star_rounds = Vector{TropicalStar}()
-#             for (parent_graph, g, excised_labels) in round
-#                 # if g is a new excised graph, add vertex in excision_graph
-#                 if !haskey(vertex_map, g)
-#                     n_vert += 1 
-#                     vertex_map[g] = next_id
-#                     next_id += 1
-#                 end
-#                 # parent = graph which g comes from
-#                 if parent_graph !== nothing
-#                     parent = vertex_map[parent_graph]
-#                     child = vertex_map[g]
-#                     push!(edges, (parent, child))
-#                     push!(Γ.excision_graph_edge_labels, excised_labels)
-#                 end
-#                 push!(star_rounds, tropical_star(g.n_vertices, g.edges))
-#             end
-#             push!(Γ.stars, star_rounds)
-#         end
-#     end
-#     Γ.excision_graph = undirected_multigraph(n_vert, edges)
-#     return Γ.stars
-# end
-
-
-# function explore_rand(Γ::TropicalGalaxy)
-#     if Γ.stars === nothing 
-#         Γ.stars = explore_all(Γ)
-#     end
-
-#     exploration = Vector{TropicalStar}()
-
-#     for round in Γ.stars
-#         if !isempty(round)
-#             n = rand(1:length(round))
-#             push!(exploration, round[n])
-#         end
-#     end
-#     return exploration
-# end
-
-
-function format_excision(excision_path::Vector{String})
-    path = String["G"]
-    edge_labels = String[]
-    last_label = " " 
-
-    for label in excision_path
-        if label != last_label
-            push!(edge_labels, " ↷ " * label)
-            last_label = label
-        end
-    end
-
-    for i in 1:length(edge_labels)
-        push!(path, "S$i")
-    end
-
-    return path, edge_labels
-end
-
-
+See `visualize_graph` for visualizing undirected multigraphs.
+"""
 function visualize_excision_graph(Γ::TropicalGalaxy)
     edgeLabels = Dict(edges(excision_graph(Γ))[i] => string(excision_graph_edge_labels(Γ)[i])
                     for i in 1:length(edges(excision_graph(Γ))))
 
     visualize_graph(excision_graph(Γ), edgeLabels = edgeLabels)
-end 
+end
