@@ -41,13 +41,17 @@ To excise a multiedge, specify its pair of vertices:
   FF = excise(HH, [1, 5])
 #+end_src
 
-The (Laman) graph `G`:
+
+#+CAPTION: The Laman graph $G$
+#+ATTR_HTML: :width 300px
 [[./images/laman_graph.png]]
 
-The excised triangle $\mathbb{H}=G\curvearrowright 1$:
+#+CAPTION: The excised triangle $\mathbb{H}=G\curvearrowright 1$:
+#+ATTR_HTML: :width 300px
 [[./images/triangle_chain_4_HH.png]]
 
-The fully excised $\mathbb{F}=G\curvearrowright 1 \curvearrowright 5$
+#+CAPTION: The fully excised $\mathbb{F}=G\curvearrowright 1 \curvearrowright 5$
+#+ATTR_HTML: :width 300px
 [[./images/triangle_chain_4_FF.png]]
 
 *** Tropical galaxies of Laman graphs
@@ -58,5 +62,6 @@ To construct a tropical galaxy, specify its Laman graph:
   Gamma = tropical_galaxy(G)
 #+end_src
 
-The tropical galaxy $\Gamma_G$:
+#+CAPTION: The tropical galaxy $\Gamma_G$:
+#+ATTR_HTML: :width 600px
 [[./images/tropical_galaxy.png]]
