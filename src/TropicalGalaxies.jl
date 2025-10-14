@@ -1,11 +1,13 @@
 module TropicalGalaxies
 
 using Revise
+using Coverage
 using Oscar
 using Plots
 using Graphs
 using GraphRecipes
 using OrderedCollections
+
 
 include("import.jl")
 include("oscar_wishlist.jl")
