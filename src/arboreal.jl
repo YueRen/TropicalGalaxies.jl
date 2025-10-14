@@ -68,10 +68,10 @@ end
 
 
 @doc raw"""
-    arboreal_pair(H1::TropicalStar, H2::TropicalStar)
+    is_arboreal_pair(H1::TropicalStar, H2::TropicalStar)
 
-Return true if the intersection graph of the two fully excised Tropical Stars `H1` and `H2` is a tree.
+Return `true` if the intersection graph of the two fully excised tropical stars `H1` and `H2` is a tree.  Return `false` otherwise.
 """
-function arboreal_pair(HH1::TropicalStar, HH2::TropicalStar)
+function is_arboreal_pair(HH1::TropicalStar, HH2::TropicalStar)
     return is_tree(intersection_graph(HH1, HH2))
 end
