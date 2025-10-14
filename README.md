@@ -1,4 +1,5 @@
 # Tropical Galaxies
+[![codecov](https://codecov.io/gh/<yourusername>/<yourrepo>/branch/main/graph/badge.svg)](https://codecov.io/gh/<yourusername>/<yourrepo>)
 
 ## Installation
 TropicalGalaxy requires Julia 1.10 or newer. It can be installed and used like any other Julia package. 
