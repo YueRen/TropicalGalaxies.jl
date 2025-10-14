@@ -17,4 +17,4 @@ export tropical_galaxy
 export TropicalStar
 export tropical_star
 export tropical_intersection_product
-export visualize_excision_graph
+export visualize

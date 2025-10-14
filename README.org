@@ -1,0 +1,60 @@
+* TropicalGalaxies.jl
+
+`TropicalGalaxies.jl` is a julia package for constructing and working with tropical galaxies as defined in the paper:
+
+#+begin_quote
+Bielby, Chauhan, Pearce, Ren: _The tropical galaxy of a Laman graph_. to be uploaded (2025)
+#+end_quote
+
+It includes part of the following database for Laman graphs:
+
+#+begin_quote
+Capco, Gallet, Grasegger, Koutschan, Lubbes, Schicho: _The number of realizations of all Laman graphs with at most 12 vertices [Data set]_. Zenodo. https://doi.org/10.5281/zenodo.1245517 (2018)
+#+end_quote
+
+
+** Installation
+To install this package:
+
+#+begin_src julia
+  using Pkg
+  Pkg.add(url="https://github.com/YueRen/TropicalGalaxies.jl.git")
+#+end_src
+
+** Usage
+
+*** Laman graphs
+To construct a Laman graph from the [[https://zenodo.org/records/1245517][database]], specify its number of vertices and its index:
+
+#+begin_src julia
+  G = laman_graph(5,1)
+  G = laman_graph(5,2)
+  G = laman_graph(5,3)
+#+end_src
+
+*** Excisions of Laman graphs
+To excise a multiedge, specify its pair of vertices:
+
+#+begin_src julia
+  G = triangle_chain(4)
+  HH = excise(G, [2, 3])
+  FF = excise(HH, [1, 5])
+#+end_src
+
+(Laman) graph `G`:
+[[file:images/laman_graph.png][laman graph]]
+
+excised triangle $\mathbb{H}=G\curvearrowright 1$:
+
+fully excised $\mathbb{F}=G\curvearrowright 1 \curvearrowright 5$
+
+*** Tropical galaxies of Laman graphs
+To construct a tropical galaxy, specify its Laman graph:
+
+#+begin_src julia
+  G = triangle_chain(4)
+  Gamma = tropical_galaxy(G)
+#+end_src
+
+tropical galaxy $\Gamma_G$:
+![tropical_galaxy](/data/tropical_galaxy.png)
