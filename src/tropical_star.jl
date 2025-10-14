@@ -10,8 +10,8 @@ mutable struct TropicalStar
 end
 
 
-function tropical_star(g::UndirectedMultigraph)
-    return TropicalStar(g, nothing)
+function tropical_star(GG::UndirectedMultigraph)
+    return TropicalStar(GG, nothing)
 end
 
 

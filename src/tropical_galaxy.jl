@@ -1,6 +1,6 @@
 ################################################################################
 #
-#  Tropical Galaxies
+#  Constructing and visualizing tropical galaxies
 #
 ################################################################################
 
@@ -92,11 +92,10 @@ end
 
 Visualize excision graph of a Tropical Galaxy Γ.
 
-See `visualize_graph` for visualizing undirected multigraphs.
 """
 function visualize_excision_graph(Γ::TropicalGalaxy)
     edgeLabels = Dict(edges(excision_graph(Γ))[i] => string(excision_graph_edge_labels(Γ)[i])
-                    for i in 1:length(edges(excision_graph(Γ))))
+                      for i in 1:length(edges(excision_graph(Γ))))
 
-    visualize_graph(excision_graph(Γ), edgeLabels = edgeLabels)
+    visualize(excision_graph(Γ), edgeLabels = edgeLabels)
 end

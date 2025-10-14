@@ -2,8 +2,10 @@ export all_multiedge_excisions
 export arboreal_pair
 export excise
 export graph
-export is_fully_exised
+export is_almost_fully_excised
+export is_fully_excised
 export laman_graph
+export n_laman_graphs
 export stars
 export tropical_linear_space
 export triangle_chain
@@ -16,4 +18,3 @@ export TropicalStar
 export tropical_star
 export tropical_intersection_product
 export visualize_excision_graph
-export visualize_graph

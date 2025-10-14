@@ -1,37 +1,68 @@
+################################################################################
+#
+# Basic implementation for undirected multigraphs
+#
+################################################################################
+
 mutable struct UndirectedMultigraph
     n_vertices::Int
     edges::Vector{Tuple{Int, Int}}
 end
 
 
-function n_vertices(g::UndirectedMultigraph)
-    return g.n_vertices
+@doc raw"""
+    n_vertices(GG::UndirectedMultigraph)
+
+Return the number of vertices in the undirected multigraph `GG`.
+"""
+function n_vertices(GG::UndirectedMultigraph)
+    return GG.n_vertices
 end
 
 
-function n_edges(g::UndirectedMultigraph)
-    return length(g.edges)
+@doc raw"""
+    n_edges(GG::UndirectedMultigraph)
+
+Return the number of edges in the undirected multigraph `GG`.
+"""
+function n_edges(GG::UndirectedMultigraph)
+    return length(GG.edges)
 end
 
 
-function edges(g::UndirectedMultigraph)
-    return g.edges
+@doc raw"""
+    edges(GG::UndirectedMultigraph)
+
+Return the edges of the undirected multigraph `GG` as a vector of tuples.
+"""
+function edges(GG::UndirectedMultigraph)
+    return GG.edges
 end
 
 
-function add_vertex!(G::UndirectedMultigraph)
-    G.n_vertices += 1 
-    return G.n_vertices
+@doc raw"""
+    add_vertex!(GG::UndirectedMultigraph)
+
+Add a new vertex to the undirected multigraph `GG` and return the new vertex index.
+"""
+function add_vertex!(GG::UndirectedMultigraph)
+    GG.n_vertices += 1
+    return GG.n_vertices
 end
 
 
-function add_edge!(G::UndirectedMultigraph, edge::Tuple{Int, Int})
-    push!(G.edges, edge)
+@doc raw"""
+    add_edge!(GG::UndirectedMultigraph, edge::Tuple{Int, Int})
+
+Add a new edge to the undirected multigraph `GG`.
+"""
+function add_edge!(GG::UndirectedMultigraph, edge::Tuple{Int, Int})
+    push!(GG.edges, edge)
 end
 
 
-function edge_adjacency_matrix(g::UndirectedMultigraph)
-    edgeList = edges(g)
+function edge_adjacency_matrix(GG::UndirectedMultigraph)
+    edgeList = edges(GG)
     m = length(edgeList)
     edgeAdjMatrix = zeros(Int, m, m)
     
@@ -52,14 +83,24 @@ function edge_adjacency_matrix(g::UndirectedMultigraph)
 end
 
 
+@doc raw"""
+    undirected_multigraph(n_vertices::Int, edges::Vector{Tuple{Int, Int}})
+
+Construct an undirected multigraph with `n_vertices` vertices and the specified `edges`.
+
+See `visualize` for visualizing undirected multigraphs.
+
+!!! Warning
+    Edges must be sorted small to large, e.g., (1,2) instead of (2,1).
+"""
 function undirected_multigraph(n_vertices::Int, edges::Vector{Tuple{Int, Int}})
-    @assert all(e->(collect(e)==sort(collect(e))), edges) "Edges must be sorted, e.g., (1,2) instead of (2,1)"
+    @assert all(e->(collect(e)==sort(collect(e))), edges) "Edges must be sorted small to large, e.g., (1,2) instead of (2,1)"
     UndirectedMultigraph(n_vertices, edges)
 end
 
 
-function Base.:(==)(g1::UndirectedMultigraph, g2::UndirectedMultigraph)
-    return n_vertices(g1) == n_vertices(g2) && edge_adjacency_matrix(g1) == edge_adjacency_matrix(g2)
+function Base.:(==)(GG1::UndirectedMultigraph, GG2::UndirectedMultigraph)
+    return n_vertices(GG1) == n_vertices(GG2) && edge_adjacency_matrix(GG1) == edge_adjacency_matrix(GG2)
 end
 
 
@@ -68,11 +109,11 @@ end
 
 Return the triangle chain graph with `n` vertices.
 
-See `visualize_graph` for visualizing undirected multigraphs.
+See `visualize` for visualizing undirected multigraphs.
 
 # Examples
 ```jldoctest
-julia> G = triangle_chain(4)
+julia> GG = triangle_chain(4)
 UndirectedMultigraph(4, [(1, 2), (1, 3), (2, 3), (3, 4), (2, 4)])
 ```
 """
@@ -97,11 +138,11 @@ end
 
 Return the triangle wheel graph with `n` vertices.
 
-See `visualize_graph` for visualizing undirected multigraphs.
+See `visualize` for visualizing undirected multigraphs.
 
 # Examples
 ```jldoctest
-julia> G = triangle_wheel(4)
+julia> GG = triangle_wheel(4)
 UndirectedMultigraph(4, [(1, 2), (1, 3), (2, 3), (1, 4), (3, 4)])
 ```
 """
@@ -122,9 +163,9 @@ function triangle_wheel(n)
 end
 
 
-function edge_labels(multigraph::UndirectedMultigraph)
+function edge_labels(GG::UndirectedMultigraph)
     label_dict = Dict{Tuple{Int, Int}, String}()
-    for (label, (u, v)) in enumerate(edges(multigraph))
+    for (label, (u, v)) in enumerate(edges(GG))
             if haskey(label_dict, (u, v))
                 label_dict[(u, v)] *= ", " * string(label)
                 label_dict[(v, u)] = label_dict[(u, v)] 
@@ -138,23 +179,23 @@ end
 
 
 @doc raw"""
-    visualize_graph(multigraph::UndirectedMultigraph;
-                    vertexLabels::Vector = collect(1:n_vertices(multigraph)),
-                    edgeLabels::Dict = edge_labels(multigraph))
+    visualize(GG::UndirectedMultigraph;
+              vertexLabels::Vector = collect(1:n_vertices(GG)),
+              edgeLabels::Dict = edge_labels(GG))
 
 Visualize underlying simple graph of an undirected multigraph, with optional vertex and edge labels.
 
 """
-function visualize_graph(multigraph::UndirectedMultigraph;
-    vertexLabels::Vector = collect(1:n_vertices(multigraph)),
-    edgeLabels::Dict = edge_labels(multigraph)
+function visualize(GG::UndirectedMultigraph;
+    vertexLabels::Vector = collect(1:n_vertices(GG)),
+    edgeLabels::Dict = edge_labels(GG)
     )
     # Visualize the underlying simple graph, adds edge labels to graph
 
     # Removes duplicate edges 
-    simple_edges = Set(Tuple(e) for e in edges(multigraph))
+    simple_edges = Set(Tuple(e) for e in edges(GG))
     
-    g = SimpleGraph(n_vertices(multigraph))
+    g = SimpleGraph(n_vertices(GG))
 
     for (u,v) in simple_edges
         Graphs.add_edge!(g, u, v)
@@ -171,31 +212,32 @@ end
 
 
 @doc raw"""
-    excise(graph::UndirectedMultigraph, excisedVertices::Vector{Int})
+    excise(GG::UndirectedMultigraph, excisedVertices::Vector{Int})
 
-Return a new UndirectedMultigraph obtained from `graph` by excising the vertices in `excisedVertices`.
+Return a new UndirectedMultigraph obtained from `GG` by excising the vertices in `excisedVertices`.
 
 # Examples
 ```jldoctest
-julia> G = triangle_wheel(4)
+julia> GG = triangle_wheel(4)
 UndirectedMultigraph(4, [(1, 2), (1, 3), (2, 3), (1, 4), (3, 4)])
 
-julia> excise(G, [1, 4])
+julia> excise(GG, [1, 4])
 UndirectedMultigraph(5, [(2, 5), (3, 5), (2, 3), (1, 4), (3, 5)])
+
 ```
 """
-function excise(graph::UndirectedMultigraph, excisedVertices::Vector{Int})
+function excise(GG::UndirectedMultigraph, excisedVertices::Vector{Int})
     @assert length(excisedVertices) == 2 "Currently, only multi-edge excisions supported"
 
     # quick and dirty test to check whether multi-edge is isolated
-    V = flatten_tuple_vector(unique(edges(graph)))
+    V = flatten_tuple_vector(unique(edges(GG)))
     if count(isequal(excisedVertices[1]), V) == 1 && count(isequal(excisedVertices[2]), V) == 1
-        return graph
+        return GG
     end
 
-    n = n_vertices(graph)
+    n = n_vertices(GG)
     newEdges = Vector{Tuple{Int, Int}}()
-    for e in edges(graph)
+    for e in edges(GG)
         if e[1] ∈ excisedVertices && e[2] ∈ excisedVertices
             push!(newEdges, e)
         elseif e[1] ∉ excisedVertices && e[2] ∉ excisedVertices
@@ -211,11 +253,11 @@ function excise(graph::UndirectedMultigraph, excisedVertices::Vector{Int})
 end 
 
 
-function vertex_edge_matrix(multigraph::UndirectedMultigraph)
-    m = length(edges(multigraph))
-    n = n_vertices(multigraph)
+function vertex_edge_matrix(GG::UndirectedMultigraph)
+    m = length(edges(GG))
+    n = n_vertices(GG)
     graph_matrix = zero_matrix(QQ, n, m)
-    for (j,edge) in enumerate(edges(multigraph))
+    for (j,edge) in enumerate(edges(GG))
         graph_matrix[edge[1],j] = -1
         graph_matrix[edge[2],j] = 1
     end
@@ -223,8 +265,8 @@ function vertex_edge_matrix(multigraph::UndirectedMultigraph)
 end
 
 
-function rank(G::UndirectedMultigraph)
-    MG = vertex_edge_matrix(G)
+function rank(GG::UndirectedMultigraph)
+    MG = vertex_edge_matrix(GG)
     return rank(MG)
 end
 
@@ -243,25 +285,63 @@ end
 
 
 @doc raw"""
-    is_fully_excised(G::UndirectedMultigraph)
+    is_fully_excised(GG::UndirectedMultigraph)
 
-Check if the undirected multigraph `G` is fully excised, i.e., every vertex is contained in a single multiedge.
+Check if the undirected multigraph `GG` is fully excised, i.e., every vertex is
+contained in a single multiedge.
+
+# Examples
+```jldoctest
+julia> GG = triangle_wheel(4)
+UndirectedMultigraph(4, [(1, 2), (1, 3), (2, 3), (1, 4), (3, 4)])
+
+julia> is_fully_excised(GG)
+false
+
+julia> HH = excise(GG, [1,2])
+UndirectedMultigraph(5, [(1, 2), (3, 5), (3, 5), (4, 5), (3, 4)])
+
+julia> is_fully_excised(HH)
+false
+
+julia> FF = excise(HH, [3,4])
+UndirectedMultigraph(6, [(1, 2), (5, 6), (5, 6), (5, 6), (3, 4)])
+
+julia> is_fully_excised(FF)
+true
+
 """
-# check if graph is fully excised, by checking if every vertex is contained in a single multiedge
-function is_fully_excised(G::UndirectedMultigraph)
-    V = flatten_tuple_vector(unique(edges(G)))
+function is_fully_excised(GG::UndirectedMultigraph)
+    V = flatten_tuple_vector(unique(edges(GG)))
     return length(V)==length(unique(V))
 end
 
 
 @doc raw"""
-    is_almost_fully_excised(G::UndirectedMultigraph)
+    is_almost_fully_excised(GG::UndirectedMultigraph)
 
-Check if the undirected multigraph `G` is almost fully excised, i.e., every vertex is contained in a single multiedge, 
-    except for one vertex which is contained in two adjacent multiedges or three vertices which form a single isolated triangle.
+Check if the undirected multigraph `GG` is almost fully excised, i.e.,
+if `GG` is either
+(a) a union of disjoint multiedges and a single multitriangle
+(b) a union of disjoint multiedges and two multiedges sharing a vertex
+
+# Examples
+```jldoctest
+julia> GG = triangle_wheel(4)
+UndirectedMultigraph(4, [(1, 2), (1, 3), (2, 3), (1, 4), (3, 4)])
+
+julia> is_almost_fully_excised(GG)
+false
+
+julia> HH = excise(GG, [1,2])
+UndirectedMultigraph(5, [(1, 2), (3, 5), (3, 5), (4, 5), (3, 4)])
+
+julia> is_almost_fully_excised(HH)
+true
+
 """
-function is_almost_fully_excised(G::UndirectedMultigraph)
-    V = flatten_tuple_vector(unique(edges(G)))
+function is_almost_fully_excised(GG::UndirectedMultigraph)
+    V = flatten_tuple_vector(unique(edges(GG)))
 
     # identify vertices that appear more than once
     VHighDegree = [ v for v in unique(V) if count(isequal(v), V) > 1 ]
@@ -273,7 +353,7 @@ function is_almost_fully_excised(G::UndirectedMultigraph)
 
     # Case: a single multitriangle
     if length(VHighDegree) == 3
-        edgesInvolvingHighDegreeVertices = [ e for e in unique(edges(G)) if any(v -> (v in VHighDegree), e) ]
+        edgesInvolvingHighDegreeVertices = [ e for e in unique(edges(GG)) if any(v -> (v in VHighDegree), e) ]
         if length(edgesInvolvingHighDegreeVertices) == 3
             return true
         end
@@ -290,14 +370,14 @@ Return a vector of undirected multigraphs containing the multiedge excisions of 
 and a vector of multiedges that led to the aforementioned excisions
 
 """
-function all_multiedge_excisions(G::UndirectedMultigraph)
+function all_multiedge_excisions(GG::UndirectedMultigraph)
     Gexcisions = Vector{UndirectedMultigraph}()
     Gmultiedges = Vector{Vector{Int}}()
 
-    if is_fully_excised(G)
+    if is_fully_excised(GG)
         return Gexcisions, Gmultiedges
     end
-    uniqueEdges = unique(edges(G)) 
+    uniqueEdges = unique(edges(GG))
     nonIsolatedEdges = []
     for e in uniqueEdges
         if length(findall(edge -> ((e[1] in edge) || (e[2] in edge)), uniqueEdges)) > 1
@@ -306,9 +386,9 @@ function all_multiedge_excisions(G::UndirectedMultigraph)
     end
 
     for e in nonIsolatedEdges
-        Gexcision = excise(G, [e[1], e[2]])
-        if Gexcision != G
-            Gmultiedge = findall(isequal(e),edges(G)) # all edge indices connecting e[1] and e[2]
+        Gexcision = excise(GG, [e[1], e[2]])
+        if Gexcision != GG
+            Gmultiedge = findall(isequal(e),edges(GG)) # all edge indices connecting e[1] and e[2]
             push!(Gexcisions, Gexcision)
             push!(Gmultiedges, Gmultiedge)
         end
@@ -355,13 +435,13 @@ end
 
 
 @doc raw"""
-    triangle_sort(Gs::Vector{UndirectedMultigraph})
+    triangle_sort(GGs::Vector{UndirectedMultigraph})
 
 Return an OrderedDict of undirected multigraphs sorted by their isolated triangle labels.
 """
-function triangle_sort(Gs::Vector{UndirectedMultigraph})
+function triangle_sort(GGs::Vector{UndirectedMultigraph})
     triangles = Dict{UndirectedMultigraph,Vector{Vector{Int}}}()
-    for G in Gs
+    for G in GGs
         key = G 
         value = has_isolated_triangle(G)[2]
         triangles[key] = value
@@ -394,32 +474,33 @@ end
 
 
 @doc raw"""
-    tropical_linear_space(G::UndirectedMultigraph)
+    tropical_linear_space(GG::UndirectedMultigraph)
 
-Return the tropical linear space of the undirected multigraph `G`.
+Return the tropical linear space of the undirected multigraph `GG`.
 
 # Examples
 ```jldoctest
-julia> G = triangle_wheel(4)
+julia> GG = triangle_wheel(4)
 UndirectedMultigraph(4, [(1, 2), (1, 3), (2, 3), (1, 4), (3, 4)])
 
-julia> tropical_linear_space(G)
+julia> tropical_linear_space(GG)
 Min tropical linear space
+
 ```
 """
-function tropical_linear_space(G::UndirectedMultigraph)
+function tropical_linear_space(GG::UndirectedMultigraph)
 
-    isFullyExcised = is_fully_excised(G)
-    isAlmostFullyExcised = is_almost_fully_excised(G)
-    hasTriangle, triangle = has_isolated_triangle(G)
+    isFullyExcised = is_fully_excised(GG)
+    isAlmostFullyExcised = is_almost_fully_excised(GG)
+    hasTriangle, triangle = has_isolated_triangle(GG)
 
     if !isAlmostFullyExcised && !isFullyExcised && !hasTriangle
-        return Oscar.tropical_linear_space(vertex_edge_matrix(G))
+        return Oscar.tropical_linear_space(vertex_edge_matrix(GG))
     end
 
     # @assert isFullyExcised || isAlmostFullyExcised "graph needs to be fully or almost fully excised"
 
-    vertexEdgeMatrix = vertex_edge_matrix(G)
+    vertexEdgeMatrix = vertex_edge_matrix(GG)
     vertexEdgeColumns = [vertexEdgeMatrix[:,c] for c in 1:ncols(vertexEdgeMatrix)]
     vertexEdgeColumnsUnique = unique(vertexEdgeColumns)
     multiedges = Vector{Int}[]
@@ -438,7 +519,7 @@ function tropical_linear_space(G::UndirectedMultigraph)
     end
 
     # put all non-triangle multiedges into the lineality of TropG
-    linealityBasis = zero_matrix(QQ, length(nonTriangleMultiedges)+1, n_edges(G))
+    linealityBasis = zero_matrix(QQ, length(nonTriangleMultiedges)+1, n_edges(GG))
     for (i, multiedge) in enumerate(nonTriangleMultiedges)
         for j in multiedge
             linealityBasis[i,j] = 1
@@ -449,7 +530,7 @@ function tropical_linear_space(G::UndirectedMultigraph)
     end
 
     # put all triangle multiedges into the rays of TropG
-    verticesAndRays = zero_matrix(QQ, length(triangleMultiedges)+1, n_edges(G))
+    verticesAndRays = zero_matrix(QQ, length(triangleMultiedges)+1, n_edges(GG))
     for (i, multiedge) in enumerate(triangleMultiedges)
         for j in multiedge
             verticesAndRays[i+1,j] = 1
