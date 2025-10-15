@@ -1,6 +1,6 @@
 * TropicalGalaxies.jl
 
-`TropicalGalaxies.jl` is a julia package for constructing and working with tropical galaxies as defined in the paper:
+~TropicalGalaxies.jl~ is a julia package for constructing and working with tropical galaxies as defined in the paper:
 
 #+begin_quote
 Bielby, Chauhan, Pearce, Ren: _The tropical galaxy of a Laman graph_. to be uploaded (2025)
