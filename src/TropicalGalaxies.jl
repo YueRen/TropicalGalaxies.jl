@@ -1,7 +1,6 @@
 module TropicalGalaxies
 
 using Revise
-using Coverage
 using Oscar
 using Plots
 using Graphs

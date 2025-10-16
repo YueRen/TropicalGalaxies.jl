@@ -34,36 +34,44 @@ function intersection_graph(T1::Vector{Vector{Int}}, T2::Vector{Vector{Int}})
     return undirected_multigraph(n, edges)
 end
 
-
-function is_connected(g::UndirectedMultigraph)
-    simpleEdges = Set(Tuple(e) for e in edges(g))
-    g = Oscar.graph(Undirected, n_vertices(g))
-    for (u,v) in simpleEdges
-        Oscar.add_edge!(g, u, v)
-    end
-    return Oscar.is_connected(g)
-end
-
-
-function is_tree(g::UndirectedMultigraph)
-    n_vert = n_vertices(g)
-    n_edge = n_edges(g)
-    return is_connected(g) && (n_edge == n_vert - 1)
-end
-
-
 @doc raw"""
-    arboreal_pair(H1::TropicalStar, H2::TropicalStar)
+    intersection_graph(HH1::TropicalStar, HH2::TropicalStar)
 
-Return true if the intersection graph of the two fully excised Tropical Stars `H1` and `H2` is a tree.
+Return the intersection graph of the two fully excised Tropical Stars `HH1` and `HH2`.
 """
-function arboreal_pair(H1::TropicalStar, H2::TropicalStar)
-    F1 = graph(H1)
-    F2 = graph(H2)
+function intersection_graph(HH1::TropicalStar, HH2::TropicalStar)
+    F1 = graph(HH1)
+    F2 = graph(HH2)
     @assert is_fully_excised(F1) && is_fully_excised(F2) "Tropical Stars must be fully excised"
 
     T1 = extract_edge_labels(F1)
     T2 = extract_edge_labels(F2)
-    C = intersection_graph(T1, T2)
-    return is_tree(C)
+    return intersection_graph(T1, T2)
+end
+
+
+function is_connected(GG::UndirectedMultigraph)
+    simpleEdges = Set(Tuple(e) for e in edges(GG))
+    GG = Oscar.graph(Undirected, n_vertices(GG))
+    for (u,v) in simpleEdges
+        Oscar.add_edge!(GG, u, v)
+    end
+    return Oscar.is_connected(GG)
+end
+
+
+function is_tree(GG::UndirectedMultigraph)
+    n_vert = n_vertices(GG)
+    n_edge = n_edges(GG)
+    return is_connected(GG) && (n_edge == n_vert - 1)
+end
+
+
+@doc raw"""
+    is_arboreal_pair(H1::TropicalStar, H2::TropicalStar)
+
+Return `true` if the intersection graph of the two fully excised tropical stars `H1` and `H2` is a tree.  Return `false` otherwise.
+"""
+function is_arboreal_pair(HH1::TropicalStar, HH2::TropicalStar)
+    return is_tree(intersection_graph(HH1, HH2))
 end
