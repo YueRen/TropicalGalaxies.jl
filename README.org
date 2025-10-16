@@ -1,4 +1,5 @@
 * TropicalGalaxies.jl
+[[https://codecov.io/github/YueRen/TropicalGalaxies.jl][https://codecov.io/github/YueRen/TropicalGalaxies.jl/graph/badge.svg?token=QN498KGX90]]
 
 ~TropicalGalaxies.jl~ is a julia package for constructing and working with tropical galaxies as defined in the paper:
 
